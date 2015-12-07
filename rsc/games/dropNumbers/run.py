@@ -26,11 +26,11 @@ class Run():
 
 		self.center = self.scr.get_width()/2, self.scr.get_height()/2
 
-		self.reset()
 		self.sliders()
 		self.effect = Effect(self)
-		
 		self.msg = Messages(self.scr)
+		
+		self.reset()
 	
 	def sliders(self):
 		
@@ -219,6 +219,7 @@ class Run():
 		self.active = True
 		self.losing = False
 		
+		clock = pg.time.Clock()
 		self.reset()
 		
 		self.blocklist = []
@@ -258,7 +259,7 @@ class Run():
 			
 			pg.display.flip()
 			
-			self.clock.tick(self.FPS)
+			clock.tick(self.FPS)
 		
 		if self.losing:
 			self.lose()

@@ -80,7 +80,7 @@ class complex(object):
 	@classmethod
 	def vector(self, window, color, startpos, angle, lenght, lnwidth = 1, antialiased=False):
 		
-		endpos = startpos[0] + lenght * cos( ( - angle) / ( 180.0 / pi ) ), \
+		endpos = int( startpos[0] ) + lenght * cos( ( - angle) / ( 180.0 / pi ) ), \
 				 startpos[1] + lenght * sin( ( - angle) / ( 180.0 / pi ) )
 
 		if antialiased:
