@@ -26,8 +26,8 @@ class Stars( object ):
 
 			for i in self.nebulalist[ g ]:
 
-				i[ 0 ] += self.pl.vx / 5.0 / ( g + 1 )
-				i[ 1 ] += self.pl.vy / 5.0 / ( g + 1 )
+				i[ 0 ] -= self.pl.vx / 5.0 / ( g + 1 )
+				i[ 1 ] -= self.pl.vy / 5.0 / ( g + 1 )
 
 	@classmethod
 	def draw( self ):

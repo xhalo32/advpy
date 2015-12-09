@@ -3,10 +3,12 @@ import threading
 import time
 
 from player import Player
+from enemy import Enemy
 from message import Messages
 from stars import Stars
-from complex import complex
+from projectile import Projectile
 from pg_enhancements import Button, Slider, Decorations
+from complex import complex
 
 p.init()
 
@@ -16,7 +18,11 @@ class Run(  ):
 
 		self.size = ( 1000, 800 )
 		self.scr = p.display.set_mode( self.size )
+		self.projectile = Projectile( self )
 		self.player = Player( self )
+		self.enemyC = Enemy( self )
+
+		self.entitylist = [  ]
 
 		self.bg = p.Color( "black" )
 		self.active = True
@@ -32,9 +38,9 @@ class Run(  ):
 			"color" : ( 0, 255, 200 ),
 			"clickcolor" : ( 0, 200, 150 ),
 			"message" : "HEY",
-			"font" : { "type" : "Arial", "size" : 50 },
+			"font" : { "type" : "Arial", "size" : 25, "clicksize" : 10 },
 			"action" : self._shoot,
-			"args" : ( ( 255, 255, 255 ), 1, 4 ),
+			"args" : ( ( 255, 255, 255 ), 1, 4, .1 ),
 			} )
 
 		self.s1 = Slider( {
@@ -58,12 +64,12 @@ class Run(  ):
 
 	def _shoot( self, args ):
 
-		self.player.shoot( args[ 0 ], args[ 1 ], args[ 2 ] )
+		self.player.shoot( args[ 0 ], args[ 1 ], args[ 2 ], args[ 3 ] )
 
 	def eventListener( self ):
 
 		if p.mouse.get_pressed(  ) == ( 1, 0, 0 ):
-			self.player.shoot( ( 0, 200, 0), self.s1.sliderpos, 6 )
+			self.player.shoot( ( 0, 200, 0), self.s1.sliderpos, 15, .1 )
 
 		for e in self.events:
 			if e.type == p.QUIT:
@@ -103,21 +109,29 @@ class Run(  ):
 				if e.key == p.K_w and self.player.vy < 0:
 					self.player.vy = 0
 
+	def restart( self ):
+
+		self.__init__(  )
+
 	def update( self ):
 
+		self.entitylist = [ self.player ] + [ e for e in self.enemyC.opponentlist ]
+
 		self.player.update(  )
+		self.enemyC.update(  )
+		self.projectile.udpate(  )
 
 		if self.holdingSpace:
-			self.player.shoot( ( 0, 255, 100 ), 2, 10 )
+			self.player.shoot( ( 0, 255, 100 ), 2, 10, 1 )
 
-		self.b1.pos[ 0 ] += self.player.vx / 3.0
-		self.b1.pos[ 1 ] += self.player.vy / 3.0
+		self.b1.pos[ 0 ] -= self.player.vx / 3.0
+		self.b1.pos[ 1 ] -= self.player.vy / 3.0
 
-		self.s1.pos[ 0 ] += self.player.vx / 3.0
-		self.s1.pos[ 1 ] += self.player.vy / 3.0
+		self.s1.pos[ 0 ] -= self.player.vx / 3.0
+		self.s1.pos[ 1 ] -= self.player.vy / 3.0
 
-		self.f1.pos[ 0 ] += self.player.vx / 3.0
-		self.f1.pos[ 1 ] += self.player.vy / 3.0
+		self.f1.pos[ 0 ] -= self.player.vx / 3.0
+		self.f1.pos[ 1 ] -= self.player.vy / 3.0
 
 		Stars.update( self )
 
@@ -133,7 +147,9 @@ class Run(  ):
 		self.s1.draw(  )
 		self.f1.draw(  )
 
+		self.projectile.draw(  )
 		self.player.draw(  )
+		self.enemyC.draw(  )
 
 	def loop( self ):
 

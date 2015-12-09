@@ -50,9 +50,13 @@ class Button( object ):
 
 		try: self.fontsize = data[ "font" ][ "size" ]
 		except: self.fontsize = 25
-
 		try: self.font = data[ "font" ][ "type" ]
 		except: self.font = "Ubuntu"
+
+		try: self.clickfontsize = data[ "font" ][ "clicksize" ]
+		except: self.clickfontsize = 20
+		try: self.clickfont = data[ "font" ][ "clicktype" ]
+		except: self.clickfont = "Ubuntu"
 
 		try: self.type = data[ "type" ]( self )
 		except: self.type = None
@@ -109,7 +113,7 @@ class Button( object ):
 		else:
 			if self.clicked:
 				p.draw.rect( self.window, self.clickcolor, self.pos )
-				Msg.blit( self.window, self.message, self.center, ColorFuncts.invert( self.clickcolor ), self.fontsize - 2, self.font )
+				Msg.blit( self.window, self.message, self.center, ColorFuncts.invert( self.clickcolor ), self.clickfontsize , self.clickfont )
 
 			else:
 				p.draw.rect( self.window, self.color, self.pos )
