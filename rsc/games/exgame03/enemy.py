@@ -16,9 +16,13 @@ class Enemy( object ):
 			self.scr = parent.scr
 			self.size = parent.size
 			self.projectile = parent.projectile
+			print self.size
 
-			self.pos = [self.x, self.y] = [ random.randint( 0, self.size[ 0 ] ), random.randint( 0, self.size[ 1 ] ) ]
-			self.speed = 1
+			self.pos = [self.x, self.y] = [ 
+							-self.parent.parent.wsx / 2.0 + random.randint( - self.size[ 0 ], self.size[ 0 ] ),
+							-self.parent.parent.wsy / 2.0 + random.randint( - self.size[ 1 ], self.size[ 1 ] ) ]
+
+			self.speed = 2
 			self.radius = radius
 			self.rotspeed = 5
 			self.rotation = 0
@@ -43,8 +47,8 @@ class Enemy( object ):
 
 			self.radrotation = self.rotation / rad + random.randrange( -1, 1 )
 
-			self.x += - self.parent.player.vx / 2.0 + self.speed * math.sin( self.radrotation )
-			self.y += - self.parent.player.vy / 2.0 + self.speed * math.cos( self.radrotation )
+			self.x += - self.parent.parent.vwsx / 2.0 + self.speed * math.sin( self.radrotation )
+			self.y += - self.parent.parent.vwsy / 2.0 + self.speed * math.cos( self.radrotation )
 
 			self.pos = [ self.x, self.y ]
 
@@ -61,7 +65,6 @@ class Enemy( object ):
 							     0 ]
 
 			if self.timer % 70 == 0:
-
 				self.shoot(  )
 
 		def shoot( self ):
@@ -77,20 +80,27 @@ class Enemy( object ):
 
 
 
-	def __init__( self, main ):
+	def __init__( self, parent ):
 
-		self.main = main
+		self.parent = parent
 
-		self.projectile = main.projectile
-		self.player = main.player
-		self.scr = main.scr
-		self.size = main.size
+		self.projectile = parent.projectile
+		self.player = parent.player
+		self.scr = parent.scr
+		self.size = parent.size
+		self.timer = 0
 
 		self.opponentlist = [  ]
-		for i in range( 10 - len( self.opponentlist ) ):
+
+		for i in range( 10 ):
 			self.opponentlist.append( self.Opponent( self, 20, 10 ) )
 
 	def update( self ):
+
+		self.timer += 1
+
+		if self.timer % 70 == 0:
+			self.opponentlist.append( self.Opponent( self, 20, 10 ) )
 
 		deads = [  ]
 		for o in self.opponentlist:

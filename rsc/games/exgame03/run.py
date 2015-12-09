@@ -1,14 +1,8 @@
 import pygame as p
-import threading
 import time
 
-from player import Player
-from enemy import Enemy
+from world import World
 from message import Messages
-from stars import Stars
-from projectile import Projectile
-from pg_enhancements import Button, Slider, Decorations
-from complex import complex
 
 p.init()
 
@@ -18,13 +12,8 @@ class Run(  ):
 
 		self.size = ( 1000, 800 )
 		self.scr = p.display.set_mode( self.size )
-		self.projectile = Projectile( self )
-		self.player = Player( self )
-		self.enemyC = Enemy( self )
+		self.world = World( self )
 
-		self.entitylist = [  ]
-
-		self.bg = p.Color( "black" )
 		self.active = True
 		self.holdingSpace = False
 		self.WFPS = 60
@@ -32,44 +21,14 @@ class Run(  ):
 
 		self.events = [  ]
 
-		self.b1 = Button( {
-			"window" : self.scr,
-			"pos" : [ 250, 250, 50, 30 ],
-			"color" : ( 0, 255, 200 ),
-			"clickcolor" : ( 0, 200, 150 ),
-			"message" : "HEY",
-			"font" : { "type" : "Arial", "size" : 25, "clicksize" : 10 },
-			"action" : self._shoot,
-			"args" : ( ( 255, 255, 255 ), 1, 4, .1 ),
-			} )
-
-		self.s1 = Slider( {
-			"window" : self.scr,
-			"pos" : [ 500, 500, 50, 30 ],
-			"color" : ( 0, 255, 200 ),
-			"color2" : ( 255, 0, 55 ),
-			"colorindex" : 100,
-			"steps" : { "startpoint" : 1, "endpoint" : 10 },
-			"font" : { "size" : 15, "clicksize" : 20 }
-			} )
-
-		self.f1 = Decorations.Flag( {
-			"window" : self.scr,
-			"pos" : [ 400, 200, 40, 40 ],
-			"color" : ( 255, 255, 255 ),
-			"speed" : 1,
-			"rotspeed" : 4,
-			"direction" : 1,
-			} )
-
 	def _shoot( self, args ):
 
-		self.player.shoot( args[ 0 ], args[ 1 ], args[ 2 ], args[ 3 ] )
+		self.world.player.shoot( args[ 0 ], args[ 1 ], args[ 2 ], args[ 3 ] )
 
 	def eventListener( self ):
 
 		if p.mouse.get_pressed(  ) == ( 1, 0, 0 ):
-			self.player.shoot( ( 0, 200, 0), self.s1.sliderpos, 15, .1 )
+			self.world.player.shoot( ( 0, 200, 0), self.world.s1.sliderpos, 15, .8 )
 
 		for e in self.events:
 			if e.type == p.QUIT:
@@ -79,77 +38,43 @@ class Run(  ):
 
 			if e.type == p.KEYDOWN:
 				if e.unicode == "d":
-					self.player.vx = self.player.speed
+					self.world.player.vx = self.world.player.speed
 
 				if e.unicode == "a":
-					self.player.vx = -self.player.speed
+					self.world.player.vx = -self.world.player.speed
 
 				if e.unicode == "w":
-					self.player.vy = -self.player.speed
+					self.world.player.vy = -self.world.player.speed
 
 				if e.unicode == "s":
-					self.player.vy = self.player.speed
+					self.world.player.vy = self.world.player.speed
 
 				if e.unicode == " ":
 					self.holdingSpace = True
 
 			if e.type == p.KEYUP:
-				if e.key == p.K_d and self.player.vx > 0:
-					self.player.vx = 0
+				if e.key == p.K_d and self.world.player.vx > 0:
+					self.world.player.vx = 0
 
 				if e.key == p.K_SPACE:
 					self.holdingSpace = False
 
-				if e.key == p.K_a and self.player.vx < 0:
-					self.player.vx = 0
+				if e.key == p.K_a and self.world.player.vx < 0:
+					self.world.player.vx = 0
 
-				if e.key == p.K_s and self.player.vy > 0:
-					self.player.vy = 0
+				if e.key == p.K_s and self.world.player.vy > 0:
+					self.world.player.vy = 0
 
-				if e.key == p.K_w and self.player.vy < 0:
-					self.player.vy = 0
-
-	def restart( self ):
-
-		self.__init__(  )
+				if e.key == p.K_w and self.world.player.vy < 0:
+					self.world.player.vy = 0
 
 	def update( self ):
 
-		self.entitylist = [ self.player ] + [ e for e in self.enemyC.opponentlist ]
-
-		self.player.update(  )
-		self.enemyC.update(  )
-		self.projectile.udpate(  )
-
-		if self.holdingSpace:
-			self.player.shoot( ( 0, 255, 100 ), 2, 10, 1 )
-
-		self.b1.pos[ 0 ] -= self.player.vx / 3.0
-		self.b1.pos[ 1 ] -= self.player.vy / 3.0
-
-		self.s1.pos[ 0 ] -= self.player.vx / 3.0
-		self.s1.pos[ 1 ] -= self.player.vy / 3.0
-
-		self.f1.pos[ 0 ] -= self.player.vx / 3.0
-		self.f1.pos[ 1 ] -= self.player.vy / 3.0
-
-		Stars.update( self )
-
-		self.b1.getClicked(  )
-		self.s1.update(  )
+		self.world.update(  )
 
 	def draw( self ):
 
-		self.scr.fill( self.bg )
-		Stars.draw(  )
-
-		self.b1.draw(  )
-		self.s1.draw(  )
-		self.f1.draw(  )
-
-		self.projectile.draw(  )
-		self.player.draw(  )
-		self.enemyC.draw(  )
+		self.world.draw(  )
 
 	def loop( self ):
 

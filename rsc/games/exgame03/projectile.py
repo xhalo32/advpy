@@ -13,7 +13,8 @@ class Projectile(object):
 		def __init__(self, parent, dad, color, angle, radius, speed, damage, pos):
 
 			self.parent = parent
-			self.player = self.parent.parent.player
+			self.vwsx = self.parent.parent.vwsx
+			self.vwsy = self.parent.parent.vwsy
 			self.scr = parent.scr
 			self.color = color
 			self.angle = angle
@@ -27,15 +28,15 @@ class Projectile(object):
 
 		def update(self):
 
-			if self.pos[0] > self.scr.get_width() or \
+			if  self.pos[0] > self.scr.get_width() or \
 				self.pos[0] < 0 or \
 				self.pos[1] < 0 or \
 				self.pos[1] > self.scr.get_width():
 
 				self.dead = True
 
-			self.pos[0] += self.speed * math.cos( ( 90 - self.angle ) / rad ) - self.player.vx / 3.0
-			self.pos[1] += self.speed * math.sin( ( 90 - self.angle ) / rad ) - self.player.vy / 3.0
+			self.pos[0] += self.speed * math.cos( ( 90 - self.angle ) / rad ) - self.vwsx / 2.0
+			self.pos[1] += self.speed * math.sin( ( 90 - self.angle ) / rad ) - self.vwsy / 2.0
 
 			p = self.pos
 
