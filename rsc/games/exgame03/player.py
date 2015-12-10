@@ -18,7 +18,7 @@ class Player():
 		self.pos = [self.x, self.y] = [ s / 2.0 for s in self.size ]
 
 		self.vx = self.vy = self.svx = self.svy = 0.0
-		self.speed = 3
+		self.speed = 5
 		self.radius = 15
 		self.rotation = 0
 		self.damage = 0

@@ -4,7 +4,7 @@ from player import Player
 from enemy import Enemy
 from stars import Stars
 from projectile import Projectile
-from pg_enhancements import Button, Slider, Decorations
+from pg_enhancements import Button, Slider, Decorations, Effect
 from message import Messages
 from complex import complex
 
@@ -22,6 +22,7 @@ class World( object ):
 		self.projectile = Projectile( self )
 		self.player = Player( self )
 		self.enemyC = Enemy( self )
+		self.effectC = Effect( self )
 
 		self.entitylist = [  ]
 
@@ -87,6 +88,7 @@ class World( object ):
 
 		self.player.update(  )
 		self.enemyC.update(  )
+		self.effectC.update(  )
 		self.projectile.udpate(  )
 
 		self.shiftworld(  )
@@ -108,5 +110,7 @@ class World( object ):
 		self.projectile.draw(  )
 		self.player.draw(  )
 		self.enemyC.draw(  )
+		self.effectC.draw(  )
 
 		Messages.message( self.scr, str( self.wsx ) + " " + str( self.wsy ), ( 10, 40 ), p.Color( 'magenta' ) )
+		Messages.message( self.scr, len( self.projectile.projectiles ), ( 10, 70 ), p.Color( 'magenta' ) )

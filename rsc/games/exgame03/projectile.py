@@ -20,37 +20,34 @@ class Projectile(object):
 			self.angle = angle
 			self.radius = radius
 			self.speed = speed
-			self.pos = [ int(pos[0]), int(pos[1]) ]
+			self.pos = [ int( pos[0] ), int( pos[1] ) ]
 			self.dead = False
+			self.timer = 0
 			self.damage = damage
 
 			self.dad = dad
 
 		def update(self):
 
-			if  self.pos[0] > self.scr.get_width() or \
-				self.pos[0] < 0 or \
-				self.pos[1] < 0 or \
-				self.pos[1] > self.scr.get_width():
+			self.timer += 1
 
+			if  self.timer > 150:
 				self.dead = True
 
-			self.pos[0] += self.speed * math.cos( ( 90 - self.angle ) / rad ) - self.vwsx / 2.0
-			self.pos[1] += self.speed * math.sin( ( 90 - self.angle ) / rad ) - self.vwsy / 2.0
+			self.pos[0] += self.speed * math.cos( ( 90 - self.angle ) / rad ) - self.vwsx / 3.0
+			self.pos[1] += self.speed * math.sin( ( 90 - self.angle ) / rad ) - self.vwsy / 3.0
 
 			p = self.pos
 
-			for e in self.parent.parent.entitylist:
+			for e in [e for e in self.parent.parent.entitylist if e != self.dad ]:
 				
-				if e != self.dad:
+				if p[ 0 ] - self.radius < e.pos[ 0 ] + e.radius and p[ 0 ] + self.radius > e.pos[ 0 ] - e.radius and \
+				   p[ 0 ] + self.radius > e.pos[ 0 ] - e.radius and p[ 0 ] - self.radius < e.pos[ 0 ] + e.radius and \
+				   p[ 1 ] - self.radius < e.pos[ 1 ] + e.radius and p[ 1 ] + self.radius > e.pos[ 1 ] - e.radius and \
+				   p[ 1 ] + self.radius > e.pos[ 1 ] - e.radius and p[ 1 ] - self.radius < e.pos[ 1 ] + e.radius:
 
-					if p[ 0 ] - self.radius < e.pos[ 0 ] + e.radius and p[ 0 ] + self.radius > e.pos[ 0 ] - e.radius and \
-					   p[ 0 ] + self.radius > e.pos[ 0 ] - e.radius and p[ 0 ] - self.radius < e.pos[ 0 ] + e.radius and \
-					   p[ 1 ] - self.radius < e.pos[ 1 ] + e.radius and p[ 1 ] + self.radius > e.pos[ 1 ] - e.radius and \
-					   p[ 1 ] + self.radius > e.pos[ 1 ] - e.radius and p[ 1 ] - self.radius < e.pos[ 1 ] + e.radius:
-
-					   self.dead = True
-					   e.damage = self.damage
+				   self.dead = True
+				   e.damage = self.damage
 
 		def draw(self):
 
@@ -75,7 +72,7 @@ class Projectile(object):
 				tt.append(u)
 
 		for t in tt:
-			self.projectiles.remove(t)
+			self.projectiles.remove( t )
 
 	def draw(self):
 		

@@ -222,6 +222,124 @@ class Slider( object ):
 				self.buttonpos,
 				self.color, self.fontsize, self.font )
 
+class Effect( object ):
+
+	class Particle( object ):
+
+		def __init__( self, scr, color, pos, radius, angle, speed, drag, world ):
+
+			self.scr = scr
+			self.color = color
+			self.radius = radius
+			self.angle = angle
+			self.speed = speed
+			self.drag = drag
+			self.pos = pos
+			self.world = world
+			[ self.vwsx, self.vwsy ] = world.vwsx / 3.0, world.vwsy / 3.0
+
+		def update( self ):
+
+			[ self.vwsx, self.vwsy ] = self.world.vwsx / 3.0, self.world.vwsy / 3.0
+
+			self.speed /= self.drag
+			rad = 180.0 / math.pi
+			self.pos[ 0 ] += self.speed * math.cos( self.angle / rad ) - self.vwsx
+			self.pos[ 1 ] += self.speed * math.sin( self.angle / rad ) - self.vwsy
+
+		def draw( self ):
+
+			p.draw.circle( 
+				self.scr, self.color, [ int( self.pos[ 0 ] ), int( self.pos[ 1 ] ) ], int( self.radius ) )
+
+			## --- ##
+
+	class Explode( object ):
+
+		def __init__( self, parent, color, size, speed, amount, lifetime, pos ):
+
+			self.parent = parent
+			self.size = size
+			self.speed = speed
+			self.color = color
+			self.pos = pos
+			self.scr = parent.scr
+			self.borders = parent.size
+			self.amount = amount
+
+			self.particles = [  ]
+			self.dead = False
+			self.timer = lifetime
+
+			for i in range( self.amount ):
+
+				angle = 360.0 / self.amount
+
+				x = self.pos[0]
+				y = self.pos[1]
+
+				self.particles.append( 
+
+					self.parent.Particle( 
+						self.scr,
+						self.color,
+						[ x, y ],
+						self.size,
+						i * angle,
+						self.speed,
+						1.05,
+						self.parent.parent	) )
+
+		def update( self ):
+
+			self.timer -= 1
+			if self.timer <= 0:
+				self.dead = True
+
+			for i in self.particles:
+				i.update(  )
+
+				if self.timer < 10 and i.radius > 0:
+					i.radius -= .3
+
+		def draw( self ):
+
+			for i in self.particles:
+				i.draw(  )
+
+		## --- ##
+
+	def __init__( self, parent ):
+
+		self.parent = parent
+		self.scr = parent.scr
+		self.size = parent.size
+		self.effects = [  ]
+
+	def mkExplosion( self, color, size, speed, amount, lifetime, pos ):
+
+		self.effects.append( self.Explode( self, color, size, speed, amount, lifetime, pos ) )
+
+	def update( self ):
+
+		tt = [  ]
+		for e in self.effects:
+
+			e.update(  )
+
+			if e.dead:
+
+				tt.append( e )
+
+		for e in tt:
+			self.effects.remove( e )
+
+	def draw( self ):
+
+		for e in self.effects:
+
+			e.draw(  )
+
 class Decorations( object ):
 
 	class Flag( object ):

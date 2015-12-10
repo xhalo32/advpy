@@ -16,11 +16,10 @@ class Enemy( object ):
 			self.scr = parent.scr
 			self.size = parent.size
 			self.projectile = parent.projectile
-			print self.size
 
-			self.pos = [self.x, self.y] = [ 
-							-self.parent.parent.wsx / 2.0 + random.randint( - self.size[ 0 ], self.size[ 0 ] ),
-							-self.parent.parent.wsy / 2.0 + random.randint( - self.size[ 1 ], self.size[ 1 ] ) ]
+			self.pos = [ self.x, self.y ] = [ 
+				-self.parent.parent.wsx / 2.0 + random.randint( - self.size[ 0 ], self.size[ 0 ] ),
+				-self.parent.parent.wsy / 2.0 + random.randint( - self.size[ 1 ], self.size[ 1 ] ) ]
 
 			self.speed = 2
 			self.radius = radius
@@ -58,6 +57,7 @@ class Enemy( object ):
 
 			if self.health <= 0:
 				self.dead = 1
+				self.parent.parent.effectC.mkExplosion( ( 255, 0, 0 ), 2, 5, 50, 80, self.pos )
 
 			index = 255.0 / self.maxhealth
 			self.healthcolor = [ int( 255 - index * self.health ), 
@@ -99,8 +99,8 @@ class Enemy( object ):
 
 		self.timer += 1
 
-		if self.timer % 70 == 0:
-			self.opponentlist.append( self.Opponent( self, 20, 10 ) )
+		#if self.timer % 70 == 0:
+		#	self.opponentlist.append( self.Opponent( self, 20, 10 ) )
 
 		deads = [  ]
 		for o in self.opponentlist:
