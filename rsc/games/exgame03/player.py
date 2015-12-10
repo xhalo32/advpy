@@ -1,6 +1,7 @@
 import pygame as p
 import math
 
+from pg_enhancements import Bars
 from complex import complex
 
 rad = (180.0 / math.pi)
@@ -15,7 +16,7 @@ class Player():
 
 		self.projectile = parent.projectile
 
-		self.pos = [self.x, self.y] = [ s / 2.0 for s in self.size ]
+		self.pos = [self.x, self.y] = [ s / 2 for s in self.size ]
 
 		self.vx = self.vy = self.svx = self.svy = 0.0
 		self.speed = 5
@@ -26,13 +27,24 @@ class Player():
 
 		self.maxhealth = 10
 		self.health = self.maxhealth
-		self.healthcolor = [ 0, 0, 0 ]
+		self.hpbar = Bars.DynamicHealthBar( self.scr, self.maxhealth )
 
-	def shoot(self, color, radius, speed, damage):
+	def shoot( self, color, radius, speed, damage ):
 
 		self.projectile.mkUnit( self, color, self.rotation, radius, speed, damage, self.pos )
 
-	def update(self):
+	def tripleshoot( self ):
+
+		self.projectile.mkUnit( self, ( 250, 250, 100 ),
+			self.rotation - 45, self.parent.s1.sliderpos, 8, self.parent.s1.sliderpos, self.pos )
+
+		#self.projectile.mkUnit( self, ( 250, 250, 100 ),
+		#	self.rotation, self.parent.s1.sliderpos, 8, self.parent.s1.sliderpos, self.pos )
+
+		#self.projectile.mkUnit( self, ( 250, 250, 100 ),
+		#	self.rotation + 45, self.parent.s1.sliderpos, 8, self.parent.s1.sliderpos, self.pos )
+
+	def update( self ):
 
 		mpos = p.mouse.get_pos()
 
@@ -60,14 +72,8 @@ class Player():
 		if self.dead:
 			self.parent.restart(  )
 
-		index = 255.0 / self.maxhealth
-		self.healthcolor = [ int( 255 - index * self.health ), 
-						     int( index * self.health ),
-						     0 ]
-
 	def draw(self):
 		
 		complex.triangle( self.scr, (255, 20, 255), self.pos, self.radius, int( self.rotation ) - 30, usecenter=True )
 
-		p.draw.rect( self.scr, self.healthcolor, [ self.pos[ 0 ] - 5*self.health,
-												    self.pos[ 1 ] + self.radius, 10*self.health, 8] )
+		self.hpbar.draw( self.pos, self.health )

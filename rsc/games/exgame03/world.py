@@ -25,7 +25,6 @@ class World( object ):
 		self.effectC = Effect( self )
 
 		self.entitylist = [  ]
-
 		self.bg = p.Color( "black" )
 
 		self.b1 = Button( {
@@ -114,3 +113,4 @@ class World( object ):
 
 		Messages.message( self.scr, str( self.wsx ) + " " + str( self.wsy ), ( 10, 40 ), p.Color( 'magenta' ) )
 		Messages.message( self.scr, len( self.projectile.projectiles ), ( 10, 70 ), p.Color( 'magenta' ) )
+		Messages.message( self.scr, self.enemyC.totaldied, ( 10, 100 ), p.Color( 'green' ) )

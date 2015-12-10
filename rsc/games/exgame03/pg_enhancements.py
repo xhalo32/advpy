@@ -250,7 +250,7 @@ class Effect( object ):
 		def draw( self ):
 
 			p.draw.circle( 
-				self.scr, self.color, [ int( self.pos[ 0 ] ), int( self.pos[ 1 ] ) ], int( self.radius ) )
+			self.scr, self.color, [ int( self.pos[ 0 ] ), int( self.pos[ 1 ] ) ], int( self.radius ) )
 
 			## --- ##
 
@@ -411,3 +411,83 @@ class Decorations( object ):
 						self.pos[ 3 ] ] )
 					
 					
+
+class Bars( object ):
+	
+	class HealthBar( object ):
+
+		def __init__( self, scr, maxhealth, barlenght, bars=-1 ):
+
+			self.scr = scr
+			self.bars = bars
+			self.maxhealth = maxhealth
+			self.barlenght = barlenght
+			if barlenght > maxhealth:
+				self.barlenght = maxhealth
+
+			self.index = 255.0 / self.maxhealth
+
+			self.healthcolor = [ 0, 0, 0 ]
+
+			if self.bars <= 0:
+				self.bars = maxhealth / float( self.barlenght )
+
+		def draw( self, center, health ):
+
+			self.healthcolor = [ int( 255 - self.index * health ), 
+							     int( self.index * health ),
+							     0 ]
+
+			for b in range( int( math.floor( self.bars ) ) ):
+
+				p.draw.rect( self.scr, self.healthcolor,
+					[ center[ 0 ] - self.barlenght * health / 2 / self.bars,
+					  center[ 1 ] + 11 * ( b + 2 ),
+					  self.barlenght * health / self.bars,
+					  8 ]
+				)
+
+	class DynamicHealthBar( object ):
+
+		def __init__( self, scr, maxhealth, barlenght = 10, bars=-1 ):
+
+			self.scr = scr
+			self.bars = bars
+			self.maxhealth = maxhealth
+			self.barlenght = barlenght
+			if barlenght > maxhealth:
+				self.barlenght = maxhealth
+
+			if self.bars <= 0:
+				self.bars = maxhealth // self.barlenght
+
+			self.maxbarhealth = maxhealth / self.bars
+			self.index = 255.0 / self.maxhealth
+			self.barindex = 255.0 / self.maxbarhealth
+
+			healthcolor = [ 0, 0, 0 ]
+			self.barlist = [  ]
+
+			for i in range( self.bars ):
+				self.barlist.append( [ self.maxbarhealth, healthcolor ] )
+
+		def draw( self, center, health ):
+
+			self.bars = len( self.barlist )
+
+			for b in self.barlist:
+				b[ 1 ] = [ 0, 255, 0 ]
+
+			self.barlist[ -1 ][ 0 ] = health - ( self.bars - 1 ) * self.maxbarhealth
+
+			if self.barlist[ -1 ][ 0 ] <= 0:
+				del self.barlist[ -1 ]
+
+			self.barlist[ -1 ][ 1 ] = [ int( 255 - self.barindex * self.barlist[ -1 ][ 0 ] ), 
+								        int( self.barindex * self.barlist[ -1 ][ 0 ] ),
+								        0 ]
+			d = 0
+			for b in self.barlist:
+				p.draw.rect( self.scr, b[ 1 ], [ center[ 0 ] - self.barlenght / 2 * b[ 0 ],
+											     center[ 1 ] + 11 * ( d + 2 ), self.barlenght * b[ 0 ], 8] )
+				d += 1

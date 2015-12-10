@@ -1,6 +1,7 @@
 import pygame as p
 import math, random
 
+from pg_enhancements import Bars
 from complex import complex
 
 rad = ( 180.0 / math.pi )
@@ -9,47 +10,52 @@ class Enemy( object ):
 
 	class Opponent( object ):
 
-		def __init__( self, parent, radius, health ):
+		def __init__( self, data ):
 
-			self.parent = parent
-			self.player = parent.player
-			self.scr = parent.scr
-			self.size = parent.size
-			self.projectile = parent.projectile
+			self.data = data
+			self.parent = data[ "self" ]
+			self.radius = data[ "radius" ]
+			self.speed = data[ "speed" ]
+			self.health = data[ "health" ]
+			self.accuracy = data[ "accuracy" ]
+			self.color = data[ "color" ]
+			self.shotspeed = data[ "shot" ][ "speed" ]
+			self.shotradius = data[ "shot" ][ "radius" ]
+			self.shotdamage = data[ "shot" ][ "damage" ]
+			self.shotcolor = data[ "shot" ][ "color" ]
 
-			self.pos = [ self.x, self.y ] = [ 
+			self.player = self.parent.player
+			self.scr = self.parent.scr
+			self.size = self.parent.size
+			self.projectile = self.parent.projectile
+
+			self.pos = [ 
 				-self.parent.parent.wsx / 2.0 + random.randint( - self.size[ 0 ], self.size[ 0 ] ),
 				-self.parent.parent.wsy / 2.0 + random.randint( - self.size[ 1 ], self.size[ 1 ] ) ]
 
-			self.speed = 2
-			self.radius = radius
-			self.rotspeed = 5
 			self.rotation = 0
 			self.timer = 0
 			self.radrotation = 0
 			self.dead = False
 			self.damage = 0
-			self.health = health
-			self.maxhealth = health
-			self.healthcolor = [ 0, 0, 0 ]
+			self.maxhealth = self.health
+			self.hpbar = Bars.DynamicHealthBar( self.scr, self.maxhealth )
 
-		def update(self):
+		def update( self ):
 
 			self.timer += 1
 
 			try:
-				self.rotation = math.atan2( self.player.pos[ 0 ] - self.x,
-				self.player.pos[ 1 ] - self.y ) * rad
+				self.rotation = math.atan2( self.player.pos[ 0 ] - self.pos[ 0 ],
+				self.player.pos[ 1 ] - self.pos[ 1 ] ) * rad
 
 			except:
 				pass
 
-			self.radrotation = self.rotation / rad + random.randrange( -1, 1 )
+			self.radrotation = self.rotation / rad
 
-			self.x += - self.parent.parent.vwsx / 2.0 + self.speed * math.sin( self.radrotation )
-			self.y += - self.parent.parent.vwsy / 2.0 + self.speed * math.cos( self.radrotation )
-
-			self.pos = [ self.x, self.y ]
+			self.pos[ 0 ] += - self.parent.parent.vwsx / 2.0 + self.speed * math.sin( self.radrotation )
+			self.pos[ 1 ] += - self.parent.parent.vwsy / 2.0 + self.speed * math.cos( self.radrotation )
 
 			if self.damage > 0 and self.health > 0:
 				self.health -= self.damage
@@ -64,21 +70,25 @@ class Enemy( object ):
 							     int( index * self.health ),
 							     0 ]
 
-			if self.timer % 70 == 0:
+			if self.timer % 10 == 0:
 				self.shoot(  )
 
 		def shoot( self ):
 
-			self.parent.projectile.mkUnit( self, ( 255, 0, 100 ), self.rotation, 3, 8, 3, self.pos )
+			self.parent.projectile.mkUnit( 
+				self,
+				self.shotcolor,
+				self.rotation + random.randint( -self.accuracy, self.accuracy ),
+				self.shotradius, self.shotspeed, self.shotdamage,
+				[ int( self.pos[ 0 ] ), int( self.pos[ 1 ] ) ] )
 
-		def draw(self):
+		def draw( self ):
 			
-			complex.triangle( self.scr, (255, 20, 20), self.pos, self.radius, int( self.rotation ) - 30, usecenter=True )
+			complex.triangle( self.scr, self.color, self.pos, self.radius, int( self.rotation ) - 30, usecenter=True )
 
-			p.draw.rect( self.scr, self.healthcolor, [ self.pos[ 0 ] - 5*self.health,
-												    self.pos[ 1 ] + self.radius, 10*self.health, 8] )
+			self.hpbar.draw( self.pos, self.health )
 
-
+		## --- ##
 
 	def __init__( self, parent ):
 
@@ -91,16 +101,33 @@ class Enemy( object ):
 		self.timer = 0
 
 		self.opponentlist = [  ]
-
-		for i in range( 10 ):
-			self.opponentlist.append( self.Opponent( self, 20, 10 ) )
+		self.totaldied = 0
+		self.recentdied = 0
 
 	def update( self ):
 
 		self.timer += 1
 
-		#if self.timer % 70 == 0:
-		#	self.opponentlist.append( self.Opponent( self, 20, 10 ) )
+		if self.timer % 2 == 0:
+			for i in range( 10 - len( self.opponentlist ) ):
+
+				data = { 
+				"self" : self,
+				"radius" : 15,
+				"speed" : 2,
+				"health" : 100,
+				"accuracy" : 10,
+				"color" : ( 255, 0, 0 ),
+
+				"shot" : { 
+					"damage" : 0.5,
+					"speed" : 7,
+					"radius" : 3,
+					"color" : ( 0, 255, 255 ),
+				 	},
+				}
+
+				self.opponentlist.append( self.Opponent( data ) )
 
 		deads = [  ]
 		for o in self.opponentlist:
@@ -113,6 +140,8 @@ class Enemy( object ):
 		for o in deads:
 
 			self.opponentlist.remove( o )
+			self.totaldied += 1
+			self.recentdied += 1
 
 	def draw( self ):
 

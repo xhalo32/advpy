@@ -28,7 +28,10 @@ class Run(  ):
 	def eventListener( self ):
 
 		if p.mouse.get_pressed(  ) == ( 1, 0, 0 ):
-			self.world.player.shoot( ( 0, 200, 0), self.world.s1.sliderpos, 15, .8 )
+			self.world.player.shoot( ( 0, 200, 0), self.world.s1.sliderpos, 15, self.world.s1.sliderpos )
+		if p.mouse.get_pressed(  ) == ( 0, 0, 1 ):
+			self.world.player.tripleshoot(  )
+
 
 		for e in self.events:
 			if e.type == p.QUIT:

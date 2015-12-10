@@ -2,41 +2,43 @@ import pygame as p
 import math
 from complex import complex
 
-rad = (180.0 / math.pi)
+rad = ( 180.0 / math.pi )
 
 
 
-class Projectile(object):
+class Projectile( object ):
 
-	class Unit(object):
+	class Unit( object ):
 
-		def __init__(self, parent, dad, color, angle, radius, speed, damage, pos):
+		def __init__( self, parent, dad, color, angle, radius, speed, damage, pos ):
 
 			self.parent = parent
 			self.vwsx = self.parent.parent.vwsx
 			self.vwsy = self.parent.parent.vwsy
 			self.scr = parent.scr
 			self.color = color
-			self.angle = angle
+			self.angle = long( angle )
 			self.radius = radius
 			self.speed = speed
-			self.pos = [ int( pos[0] ), int( pos[1] ) ]
+			self.pos = pos
 			self.dead = False
 			self.timer = 0
 			self.damage = damage
 
 			self.dad = dad
 
-		def update(self):
+		def update( self ):
+
+			self.vwsx = self.parent.parent.vwsx
+			self.vwsy = self.parent.parent.vwsy
 
 			self.timer += 1
 
 			if  self.timer > 150:
 				self.dead = True
 
-			self.pos[0] += self.speed * math.cos( ( 90 - self.angle ) / rad ) - self.vwsx / 3.0
-			self.pos[1] += self.speed * math.sin( ( 90 - self.angle ) / rad ) - self.vwsy / 3.0
-
+			self.pos[ 0 ] += self.speed * math.cos( ( 90 - self.angle ) / rad ) - self.vwsx / 3.0
+			self.pos[ 1 ] += self.speed * math.sin( ( 90 - self.angle ) / rad ) - self.vwsy / 3.0
 			p = self.pos
 
 			for e in [e for e in self.parent.parent.entitylist if e != self.dad ]:
@@ -83,5 +85,5 @@ class Projectile(object):
 	def mkUnit(self, parent, color, angle, radius, speed, damage, pos):
 
 		self.projectiles.append(
-				self.Unit( self, parent, color, angle, radius, speed, damage, pos )
+				self.Unit( self, parent, color, long( angle ), radius, speed, damage, pos )
 			)
