@@ -10,8 +10,8 @@ class Run(  ):
 
 	def __init__( self ):
 
-		self.size = ( 1000, 800 )
-		self.scr = p.display.set_mode( self.size )
+		self.size = ( 1024, 768 )
+		self.scr = p.display.set_mode( self.size, p.FULLSCREEN )
 		self.world = World( self )
 
 		self.active = True
@@ -29,9 +29,9 @@ class Run(  ):
 
 		if p.mouse.get_pressed(  ) == ( 1, 0, 0 ):
 			self.world.player.shoot( ( 0, 200, 0), self.world.s1.sliderpos, 15, self.world.s1.sliderpos )
-		if p.mouse.get_pressed(  ) == ( 0, 0, 1 ):
-			self.world.player.tripleshoot(  )
 
+		if p.mouse.get_pressed(  ) == ( 0, 0, 1 ) and self.world.player.rocketshoot_timer <= 0:
+			self.world.player.rocketshoot(  )
 
 		for e in self.events:
 			if e.type == p.QUIT:
@@ -54,6 +54,9 @@ class Run(  ):
 
 				if e.unicode == " ":
 					self.holdingSpace = True
+
+				if e.key == p.K_ESCAPE:
+					self.active = False
 
 			if e.type == p.KEYUP:
 				if e.key == p.K_d and self.world.player.vx > 0:
@@ -107,7 +110,9 @@ class Run(  ):
 			clk.tick( self.WFPS )
 
 r = Run()
-r.loop()
-
+try:
+	r.loop()
+except: print "Exception"
+	
 p.quit(  )
 quit(  )

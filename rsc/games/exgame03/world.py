@@ -74,6 +74,8 @@ class World( object ):
 
 	def update( self ):
 
+		self.scr.fill( self.bg )
+		
 		self.vwsx = self.player.vx
 		self.vwsy = self.player.vy
 
@@ -99,17 +101,16 @@ class World( object ):
 
 	def draw( self ):
 
-		self.scr.fill( self.bg )
 		Stars.draw(  )
 
 		self.b1.draw(  )
 		self.s1.draw(  )
 		self.f1.draw(  )
 
-		self.projectile.draw(  )
-		self.player.draw(  )
-		self.enemyC.draw(  )
 		self.effectC.draw(  )
+		self.projectile.draw(  )
+		self.enemyC.draw(  )
+		self.player.draw(  )
 
 		Messages.message( self.scr, str( self.wsx ) + " " + str( self.wsy ), ( 10, 40 ), p.Color( 'magenta' ) )
 		Messages.message( self.scr, len( self.projectile.projectiles ), ( 10, 70 ), p.Color( 'magenta' ) )

@@ -1,5 +1,5 @@
 import pygame as p
-import math
+import math, random
 
 p.font.init(  )
 
@@ -282,12 +282,14 @@ class Effect( object ):
 
 					self.parent.Particle( 
 						self.scr,
-						self.color,
+						[ self.color[ 0 ] - random.randint( 0, 100 ),
+						  self.color[ 1 ],
+						  self.color[ 2 ], ],
 						[ x, y ],
-						self.size,
+						self.size * random.randint( 1, 4 ),
 						i * angle,
-						self.speed,
-						1.05,
+						self.speed + random.randint( -20, 20 ) / 10.0,
+						1.01 + random.randint( 0, 10 ) / 100.0,
 						self.parent.parent	) )
 
 		def update( self ):
@@ -299,7 +301,61 @@ class Effect( object ):
 			for i in self.particles:
 				i.update(  )
 
-				if self.timer < 10 and i.radius > 0:
+				if self.timer < 20 and i.radius > 0:
+					i.radius -= .3
+
+		def draw( self ):
+
+			for i in self.particles:
+				i.draw(  )
+
+	class Explode2( object ):
+
+		def __init__( self, parent, color, size, speed, amount, lifetime, pos, angle ):
+
+			self.parent = parent
+			self.size = size
+			self.speed = speed
+			self.color = color
+			self.pos = pos
+			self.scr = parent.scr
+			self.borders = parent.size
+			self.amount = amount
+			self.angle = angle
+
+			self.particles = [  ]
+			self.dead = False
+			self.timer = lifetime
+
+			for i in range( self.amount ):
+
+				x = self.pos[ 0 ]
+				y = self.pos[ 1 ]
+
+				self.particles.append( 
+
+					self.parent.Particle( 
+						self.scr,
+						[ self.color[ 0 ] - random.randint( 0, 30 ),
+						  self.color[ 1 ] - random.randint( 0, 200 ),
+						  self.color[ 2 ], ],
+						[ x, y ],
+						self.size * random.randint( 1, 4 ),
+						90 - self.angle + random.randint( -25, 25 ),
+						self.speed + random.randint( -20, 20 ) / 10.0,
+						1.01 + random.randint( 0, 10 ) / 100.0,
+						self.parent.parent	) )
+
+		def update( self ):
+
+			self.timer -= 1
+			if self.timer <= 0:
+				self.dead = True
+
+			for i in self.particles:
+				i.update(  )
+
+				if self.timer < 20 and i.radius > 0:
 					i.radius -= .3
 
 		def draw( self ):
@@ -319,6 +375,10 @@ class Effect( object ):
 	def mkExplosion( self, color, size, speed, amount, lifetime, pos ):
 
 		self.effects.append( self.Explode( self, color, size, speed, amount, lifetime, pos ) )
+
+	def mkExplosion2( self, color, size, speed, amount, lifetime, pos, angle ):
+
+		self.effects.append( self.Explode2( self, color, size, speed, amount, lifetime, pos, angle ) )
 
 	def update( self ):
 

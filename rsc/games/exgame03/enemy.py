@@ -23,7 +23,9 @@ class Enemy( object ):
 			self.shotradius = data[ "shot" ][ "radius" ]
 			self.shotdamage = data[ "shot" ][ "damage" ]
 			self.shotcolor = data[ "shot" ][ "color" ]
+			self.shotrate = data[ "shot" ][ "rate" ]
 
+			self.effectC = self.parent.parent.effectC
 			self.player = self.parent.player
 			self.scr = self.parent.scr
 			self.size = self.parent.size
@@ -63,14 +65,14 @@ class Enemy( object ):
 
 			if self.health <= 0:
 				self.dead = 1
-				self.parent.parent.effectC.mkExplosion( ( 255, 0, 0 ), 2, 5, 50, 80, self.pos )
+				self.effectC.mkExplosion( ( 255, 0, 0 ), 1, 5, 100, 80, self.pos )
 
 			index = 255.0 / self.maxhealth
 			self.healthcolor = [ int( 255 - index * self.health ), 
 							     int( index * self.health ),
 							     0 ]
 
-			if self.timer % 10 == 0:
+			if self.timer % self.shotrate == 0:
 				self.shoot(  )
 
 		def shoot( self ):
@@ -85,7 +87,6 @@ class Enemy( object ):
 		def draw( self ):
 			
 			complex.triangle( self.scr, self.color, self.pos, self.radius, int( self.rotation ) - 30, usecenter=True )
-
 			self.hpbar.draw( self.pos, self.health )
 
 		## --- ##
@@ -109,20 +110,21 @@ class Enemy( object ):
 		self.timer += 1
 
 		if self.timer % 2 == 0:
-			for i in range( 10 - len( self.opponentlist ) ):
+			for i in range( 5 - len( self.opponentlist ) ):
 
 				data = { 
 				"self" : self,
 				"radius" : 15,
 				"speed" : 2,
-				"health" : 100,
-				"accuracy" : 10,
+				"health" : 10,
+				"accuracy" : 0,
 				"color" : ( 255, 0, 0 ),
 
 				"shot" : { 
-					"damage" : 0.5,
-					"speed" : 7,
-					"radius" : 3,
+					"damage" : 1.5,
+					"speed" : 12,
+					"radius" : 5,
+					"rate" : 70,
 					"color" : ( 0, 255, 255 ),
 				 	},
 				}

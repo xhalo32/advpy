@@ -1,5 +1,6 @@
 import pygame as p
 import math
+from projectile_types import Types
 from complex import complex
 
 rad = ( 180.0 / math.pi )
@@ -10,59 +11,42 @@ class Projectile( object ):
 
 	class Unit( object ):
 
-		def __init__( self, parent, dad, color, angle, radius, speed, damage, pos ):
+		def __init__( self, parent, data ):
 
 			self.parent = parent
-			self.vwsx = self.parent.parent.vwsx
-			self.vwsy = self.parent.parent.vwsy
+			self.damage = data[ "damage" ]
+			self.radius = data[ "radius" ]
+			self.speed = data[ "speed" ]
+			self.angle = data[ "angle" ]
+			self.color = data[ "color"]
+			self.pos = data[ "pos" ]
+			self.dad = data[ "dad" ]
+
+			try: self.type = getattr( Types, data[ "type" ] )( self )
+			except: self.type = Types.DEFAULT( self )
+
 			self.scr = parent.scr
-			self.color = color
-			self.angle = long( angle )
-			self.radius = radius
-			self.speed = speed
-			self.pos = pos
 			self.dead = False
 			self.timer = 0
-			self.damage = damage
-
-			self.dad = dad
 
 		def update( self ):
 
-			self.vwsx = self.parent.parent.vwsx
-			self.vwsy = self.parent.parent.vwsy
+			self.type.update(  )
 
-			self.timer += 1
+		def draw( self ):
 
-			if  self.timer > 150:
-				self.dead = True
+			self.type.draw(  )
 
-			self.pos[ 0 ] += self.speed * math.cos( ( 90 - self.angle ) / rad ) - self.vwsx / 3.0
-			self.pos[ 1 ] += self.speed * math.sin( ( 90 - self.angle ) / rad ) - self.vwsy / 3.0
-			p = self.pos
+		## --- ##
 
-			for e in [e for e in self.parent.parent.entitylist if e != self.dad ]:
-				
-				if p[ 0 ] - self.radius < e.pos[ 0 ] + e.radius and p[ 0 ] + self.radius > e.pos[ 0 ] - e.radius and \
-				   p[ 0 ] + self.radius > e.pos[ 0 ] - e.radius and p[ 0 ] - self.radius < e.pos[ 0 ] + e.radius and \
-				   p[ 1 ] - self.radius < e.pos[ 1 ] + e.radius and p[ 1 ] + self.radius > e.pos[ 1 ] - e.radius and \
-				   p[ 1 ] + self.radius > e.pos[ 1 ] - e.radius and p[ 1 ] - self.radius < e.pos[ 1 ] + e.radius:
-
-				   self.dead = True
-				   e.damage = self.damage
-
-		def draw(self):
-
-			complex.vector( self.scr, self.color, self.pos, self.angle - 90, 2 * self.speed, self.radius )
-
-	def __init__(self, parent):
+	def __init__( self, parent ):
 
 		self.parent = parent
 		self.scr = parent.scr
 
 		self.projectiles = []
 
-	def udpate(self):
+	def udpate( self ):
 
 		tt = []
 
@@ -76,14 +60,41 @@ class Projectile( object ):
 		for t in tt:
 			self.projectiles.remove( t )
 
-	def draw(self):
+	def draw( self ):
 		
 		for u in self.projectiles:
 
 			u.draw()
 
-	def mkUnit(self, parent, color, angle, radius, speed, damage, pos):
+	def mkUnit( self, parent, color, angle, radius, speed, damage, pos ):
+
+		data = { 
+			"dad" : parent,
+			"color" : color,
+			"angle" : angle,
+			"radius" : radius,
+			"speed" : speed,
+			"damage" : damage,
+			"pos" : pos,
+			}
 
 		self.projectiles.append(
-				self.Unit( self, parent, color, long( angle ), radius, speed, damage, pos )
+				self.Unit( self, data )
+			)
+
+	def mkRPG( self, parent, color, angle, radius, speed, damage, pos ):
+
+		data = { 
+			"dad" : parent,
+			"color" : color,
+			"angle" : angle,
+			"radius" : radius,
+			"speed" : speed,
+			"damage" : damage,
+			"pos" : pos,
+			"type" : "TRAIL"
+			}
+
+		self.projectiles.append(
+				self.Unit( self, data )
 			)

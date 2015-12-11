@@ -1,5 +1,5 @@
 import pygame as p
-import math
+import math, random
 
 from pg_enhancements import Bars
 from complex import complex
@@ -28,15 +28,17 @@ class Player():
 		self.maxhealth = 10
 		self.health = self.maxhealth
 		self.hpbar = Bars.DynamicHealthBar( self.scr, self.maxhealth )
+		self.rocketshoot_timer = 0
 
 	def shoot( self, color, radius, speed, damage ):
 
 		self.projectile.mkUnit( self, color, self.rotation, radius, speed, damage, self.pos )
 
-	def tripleshoot( self ):
+	def rocketshoot( self ):
 
-		self.projectile.mkUnit( self, ( 250, 250, 100 ),
-			self.rotation - 45, self.parent.s1.sliderpos, 8, self.parent.s1.sliderpos, self.pos )
+		self.rocketshoot_timer = 3
+		self.projectile.mkRPG( self, ( 250, 250, 0 ),
+			self.rotation + random.randint( -10, 10 ), 6, 8, 2.5, self.pos )
 
 		#self.projectile.mkUnit( self, ( 250, 250, 100 ),
 		#	self.rotation, self.parent.s1.sliderpos, 8, self.parent.s1.sliderpos, self.pos )
@@ -46,6 +48,7 @@ class Player():
 
 	def update( self ):
 
+		self.rocketshoot_timer -= 1
 		mpos = p.mouse.get_pos()
 
 		try:
