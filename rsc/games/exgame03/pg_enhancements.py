@@ -513,6 +513,7 @@ class Bars( object ):
 		def __init__( self, scr, maxhealth, barlenght = 10, bars=-1 ):
 
 			self.scr = scr
+			self.size = scr.get_width(  ), scr.get_height(  )
 			self.bars = bars
 			self.maxhealth = maxhealth
 			self.barlenght = barlenght
@@ -529,12 +530,13 @@ class Bars( object ):
 			healthcolor = [ 0, 0, 0 ]
 			self.barlist = [  ]
 
-			for i in range( self.bars ):
+			for i in range( int( math.floor( self.bars ) ) ):
 				self.barlist.append( [ self.maxbarhealth, healthcolor ] )
 
-		def draw( self, center, health ):
+		def draw( self, cent, health ):
 
 			self.bars = len( self.barlist )
+			center = [ cent[ 0 ], cent[ 1 ] ]
 
 			for b in self.barlist:
 				b[ 1 ] = [ 0, 255, 0 ]
@@ -547,12 +549,69 @@ class Bars( object ):
 			self.barlist[ -1 ][ 1 ] = [ abs( int( 255 - self.barindex * self.barlist[ -1 ][ 0 ] ) ), 
 								        abs( int( self.barindex * self.barlist[ -1 ][ 0 ] ) ),
 								        0 ]
+
+			if center[ 1 ] + 8 * ( len( self.barlist ) + 3 ) + 2 * 6 >= self.size[ 1 ]:
+				center[ 1 ] = self.size[ 1 ] - ( 8 * ( len( self.barlist ) + 3 ) + 2 * 6 )
+
+			elif center[ 1 ] <= 0:
+				center[ 1 ] = 0
+
+			try:
+				if center[ 0 ] + int( 7 * self.barlist[ 0 ][ 0 ] ) >= self.size[ 0 ]:
+					center[ 0 ] = self.size[ 0 ] - int( 7 * self.barlist[ 0 ][ 0 ] )
+
+				elif center[ 0 ] - int( 7 * self.barlist[ 0 ][ 0 ] ) <= 0:
+					center[ 0 ] = int( 7 * self.barlist[ 0 ][ 0 ] )
+			except: pass
+
 			d = 0
 			for b in self.barlist:
 				try:
 					p.draw.rect( self.scr, b[ 1 ], 
 						[ center[ 0 ] - self.barlenght / 2 * b[ 0 ],
-						  center[ 1 ] + 11 * ( d + 3 ), self.barlenght * b[ 0 ], 8] )
+						  center[ 1 ] + 8 * ( d + 3 ), self.barlenght * b[ 0 ], 6] )
 				except:
 					pass
 				d += 1
+
+	class ProtBar( object ):
+
+		@classmethod
+		def draw( self, scr, cent, prot, depth=-1 ):
+
+			if depth < 0:
+				depth = prot / 10.0
+
+			if depth >= 25.5:
+				depth = 25.5
+			try:
+				prot /= depth
+			except: pass
+
+			size = scr.get_width(  ), scr.get_height(  )
+
+			center = [ cent[ 0 ], cent[ 1 ] ]
+
+			if center[ 1 ] + 8 * 5 + 2 * 6 >= size[ 1 ]:
+				center[ 1 ] = size[ 1 ] - 8 * 1 + 3 + 2 * 6
+
+			elif center[ 1 ] <= 0:
+				center[ 1 ] = 0
+
+			try:
+				if center[ 0 ] + int( 7 * prot ) >= size[ 0 ]:
+					center[ 0 ] = size[ 0 ] - int( 7 * prot )
+
+				elif center[ 0 ] - int( 7 * prot ) <= 0:
+					center[ 0 ] = int( 7 * prot )
+			except: pass
+
+			prot = int( math.floor( prot ) )
+
+			for i in range( int( prot // depth ) ):
+
+				p.draw.rect( scr, ( 255 - 10 * depth, 255 - 10 * depth, 255 - 10 * depth ), [ 
+					center[ 0 ] - 3,
+					center[ 1 ] + 10 * ( i + 3 ),
+					6,
+					6 ] )

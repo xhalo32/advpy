@@ -17,6 +17,7 @@ class Enemy( object ):
 			self.radius = data[ "radius" ]
 			self.speed = data[ "speed" ]
 			self.health = data[ "health" ]
+			self.prot = data[ "protection" ]
 			self.accuracy = data[ "accuracy" ]
 			self.color = data[ "color" ]
 			self.shotspeed = data[ "shot" ][ "speed" ]
@@ -43,7 +44,7 @@ class Enemy( object ):
 			self.dead = False
 			self.damage = 0
 			self.maxhealth = self.health
-			self.hpbar = Bars.DynamicHealthBar( self.scr, self.maxhealth, 30 )
+			self.hpbar = Bars.DynamicHealthBar( self.scr, self.maxhealth )
 
 		def update( self ):
 
@@ -62,12 +63,21 @@ class Enemy( object ):
 			self.pos[ 1 ] += - self.parent.parent.vwsy / 2.0 + self.speed * math.cos( self.radrotation )
 
 			if self.damage > 0 and self.health > 0:
-				self.health -= self.damage
+				try:
+					self.health -= self.damage / self.prot
+				except:
+					self.health -= self.damage / ( self.prot + 1 )
+
+
 				if self.health <= 0:
 					
 					self.dead = 1
-					self.effectC.mkExplosion( ( 255, 0, 0 ), 1,
-						self.damage / 1.5, self.maxhealth * self.damage // 6, 100, self.pos )
+
+					self.effectC.mkExplosion( ( 255, 0, 0 ),
+						2 + self.damage / 100,
+						5 + self.damage / 50,
+						50 + self.maxhealth // 10,
+						100, self.pos )
 
 				self.damage = 0
 
@@ -119,7 +129,7 @@ class Enemy( object ):
 		self.timer = 0
 
 		self.opponentlist = [  ]
-		self.opponent_amount = 2
+		self.opponent_amount = 20
 		self.totaldied = 0
 		self.recentdied = 0
 
@@ -132,18 +142,19 @@ class Enemy( object ):
 
 				data = { 
 				"self" : self,
-				"radius" : 25,
+				"radius" : 15,
 				"speed" : 3,
-				"health" : 500,
+				"health" : 20,
+				"protection" : 1,
 				"accuracy" : 0,
 				"color" : ( 255, 0, 0 ),
 
-				"shot" : { 
+				"shot" : {
 					"damage" : 4,
 					"lifetime" : 80,
 					"speed" : 12,
-					"radius" : 6,
-					"rate" : 30,
+					"radius" : 3,
+					"rate" : 50,
 					"color" : ( 0, 255, 255 ),
 					"expindex" : ( 0, 100, 100 ),
 				 	},

@@ -25,7 +25,8 @@ class Player():
 		self.damage = 0
 		self.dead = False
 
-		self.maxhealth = 100
+		self.maxhealth = 15
+		self.prot = 0
 		self.health = self.maxhealth
 		self.hpbar = Bars.DynamicHealthBar( self.scr, self.maxhealth )
 		self.rocketshoot_timer = 0
@@ -36,7 +37,7 @@ class Player():
 
 	def rocketshoot( self ):
 
-		self.rocketshoot_timer = 1
+		self.rocketshoot_timer = 4
 		self.projectile.mkUnit( {
 
 			"dad" : self,
@@ -45,7 +46,7 @@ class Player():
 			"angle" : self.rotation + random.randint( -10, 10 ),
 			"radius" : 8,
 			"speed" : 12,
-			"damage" : 8,
+			"damage" : 4,
 			"lifetime" : 80,
 			"pos" : self.pos,
 			"type" : "TRAIL",
@@ -93,7 +94,11 @@ class Player():
 				self.pos, 180 + self.rotation )
 
 		if self.damage > 0 and self.health > 0:
-			self.health -= self.damage
+			try:
+				self.health -= self.damage / self.prot
+			except:
+				self.health -= self.damage / ( self.prot + 1 )
+
 			self.damage = 0
 
 		if self.health <= 0:
