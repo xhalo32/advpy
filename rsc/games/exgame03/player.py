@@ -36,8 +36,8 @@ class Player():
 
 	def rocketshoot( self ):
 
-		self.rocketshoot_timer = 3
-		self.projectile.mkRPG( self, ( 250, 250, 0 ),
+		self.rocketshoot_timer = 5
+		self.projectile.mkRPG( self, ( 250, 250, 0 ), ( 20, 100, 0 ),
 			self.rotation + random.randint( -10, 10 ), 6, 8, 2.5, self.pos )
 
 		#self.projectile.mkUnit( self, ( 250, 250, 100 ),

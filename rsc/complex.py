@@ -81,7 +81,6 @@ class complex(object):
 	def vector(self, window, color, startpos, angle, lenght, lnwidth = 1, antialiased=False):
 
 		startpos = int( startpos[ 0 ] ), int( startpos[ 1 ] )
-		print startpos
 		endpos = int( startpos[0] ) + lenght * cos( ( - angle) / ( 180.0 / pi ) ), \
 				 startpos[1] + lenght * sin( ( - angle) / ( 180.0 / pi ) )
 

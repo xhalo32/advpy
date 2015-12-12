@@ -11,7 +11,7 @@ class Run(  ):
 	def __init__( self ):
 
 		self.size = ( 1024, 768 )
-		self.scr = p.display.set_mode( self.size, p.FULLSCREEN )
+		self.scr = p.display.set_mode( self.size )
 		self.world = World( self )
 
 		self.active = True
@@ -110,9 +110,9 @@ class Run(  ):
 			clk.tick( self.WFPS )
 
 r = Run()
-try:
-	r.loop()
+try:pass
 except: print "Exception"
+r.loop()
 	
 p.quit(  )
 quit(  )

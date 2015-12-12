@@ -19,6 +19,7 @@ class Projectile( object ):
 			self.speed = data[ "speed" ]
 			self.angle = data[ "angle" ]
 			self.color = data[ "color"]
+			self.colorindex = data[ "colorindex"]
 			self.pos = data[ "pos" ]
 			self.dad = data[ "dad" ]
 
@@ -82,11 +83,12 @@ class Projectile( object ):
 				self.Unit( self, data )
 			)
 
-	def mkRPG( self, parent, color, angle, radius, speed, damage, pos ):
+	def mkRPG( self, parent, color, colorindex, angle, radius, speed, damage, pos ):
 
 		data = { 
 			"dad" : parent,
 			"color" : color,
+			"colorindex" : colorindex,
 			"angle" : angle,
 			"radius" : radius,
 			"speed" : speed,

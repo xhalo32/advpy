@@ -311,12 +311,13 @@ class Effect( object ):
 
 	class Explode2( object ):
 
-		def __init__( self, parent, color, size, speed, amount, lifetime, pos, angle ):
+		def __init__( self, parent, color, colorindex, size, speed, amount, lifetime, pos, angle ):
 
 			self.parent = parent
 			self.size = size
 			self.speed = speed
 			self.color = color
+			self.colorindex = colorindex
 			self.pos = pos
 			self.scr = parent.scr
 			self.borders = parent.size
@@ -336,9 +337,9 @@ class Effect( object ):
 
 					self.parent.Particle( 
 						self.scr,
-						[ self.color[ 0 ] - random.randint( 0, 30 ),
-						  self.color[ 1 ] - random.randint( 0, 200 ),
-						  self.color[ 2 ], ],
+						[ self.color[ 0 ] - random.randint( 0, self.colorindex[ 0 ] ),
+						  self.color[ 1 ] - random.randint( 0, self.colorindex[ 1 ] ),
+						  self.color[ 2 ] - random.randint( 0, self.colorindex[ 2 ] ), ],
 						[ x, y ],
 						self.size * random.randint( 1, 4 ),
 						90 - self.angle + random.randint( -25, 25 ),
@@ -376,9 +377,9 @@ class Effect( object ):
 
 		self.effects.append( self.Explode( self, color, size, speed, amount, lifetime, pos ) )
 
-	def mkExplosion2( self, color, size, speed, amount, lifetime, pos, angle ):
+	def mkExplosion2( self, color, colorindex, size, speed, amount, lifetime, pos, angle ):
 
-		self.effects.append( self.Explode2( self, color, size, speed, amount, lifetime, pos, angle ) )
+		self.effects.append( self.Explode2( self, color, colorindex, size, speed, amount, lifetime, pos, angle ) )
 
 	def update( self ):
 

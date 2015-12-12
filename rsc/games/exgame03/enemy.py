@@ -23,6 +23,7 @@ class Enemy( object ):
 			self.shotradius = data[ "shot" ][ "radius" ]
 			self.shotdamage = data[ "shot" ][ "damage" ]
 			self.shotcolor = data[ "shot" ][ "color" ]
+			self.colorindex = data[ "shot" ][ "expindex" ]
 			self.shotrate = data[ "shot" ][ "rate" ]
 
 			self.effectC = self.parent.parent.effectC
@@ -77,9 +78,10 @@ class Enemy( object ):
 
 		def shoot( self ):
 
-			self.parent.projectile.mkUnit( 
+			self.parent.projectile.mkRPG( 
 				self,
 				self.shotcolor,
+				self.colorindex,
 				self.rotation + random.randint( -self.accuracy, self.accuracy ),
 				self.shotradius, self.shotspeed, self.shotdamage,
 				[ int( self.pos[ 0 ] ), int( self.pos[ 1 ] ) ] )
@@ -126,6 +128,7 @@ class Enemy( object ):
 					"radius" : 5,
 					"rate" : 70,
 					"color" : ( 0, 255, 255 ),
+					"expindex" : ( 20, 100, 0 ),
 				 	},
 				}
 
