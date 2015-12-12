@@ -27,17 +27,6 @@ class World( object ):
 		self.entitylist = [  ]
 		self.bg = p.Color( "black" )
 
-		self.b1 = Button( {
-			"window" : self.scr,
-			"pos" : [ 250, 250, 50, 30 ],
-			"color" : ( 0, 255, 200 ),
-			"clickcolor" : ( 0, 200, 150 ),
-			"message" : "HEY",
-			"font" : { "type" : "Arial", "size" : 25, "clicksize" : 10 },
-			"action" : self.main._shoot,
-			"args" : ( ( 255, 255, 255 ), 1, 4, .1 ),
-			} )
-
 		self.s1 = Slider( {
 			"window" : self.scr,
 			"pos" : [ 500, 500, 50, 30 ],
@@ -48,29 +37,14 @@ class World( object ):
 			"font" : { "size" : 15, "clicksize" : 20 }
 			} )
 
-		self.f1 = Decorations.Flag( {
-			"window" : self.scr,
-			"pos" : [ 400, 200, 40, 40 ],
-			"color" : ( 255, 255, 255 ),
-			"speed" : 1,
-			"rotspeed" : 4,
-			"direction" : 1,
-			} )
-
 	def restart( self ):
 
 		self.__init__( self.main )
 
 	def shiftworld( self ):
-
-		self.b1.pos[ 0 ] -= self.vwsx / 3.0
-		self.b1.pos[ 1 ] -= self.vwsy / 3.0
-
+		
 		self.s1.pos[ 0 ] -= self.vwsx / 3.0
 		self.s1.pos[ 1 ] -= self.vwsy / 3.0
-
-		self.f1.pos[ 0 ] -= self.vwsx / 3.0
-		self.f1.pos[ 1 ] -= self.vwsy / 3.0
 
 	def update( self ):
 
@@ -85,7 +59,17 @@ class World( object ):
 		self.entitylist = [ self.player ] + [ e for e in self.enemyC.opponentlist ]
 
 		if self.main.holdingSpace:
-			self.player.shoot( ( 0, 255, 100 ), 2, 10, 1 )
+			self.player.shoot( {
+			"dad" : self.player,
+			"color" : ( 0, 250, 100 ),
+			"colorindex" : ( 0, 100, 50 ),
+			"angle" : self.player.rotation,
+			"radius" : 3,
+			"speed" : 8,
+			"damage" : 1,
+			"lifetime" : 90,
+			"pos" : self.player.pos,
+			}  )
 
 		self.player.update(  )
 		self.enemyC.update(  )
@@ -96,16 +80,13 @@ class World( object ):
 
 		Stars.update( self )
 
-		self.b1.getClicked(  )
 		self.s1.update(  )
 
 	def draw( self ):
 
 		Stars.draw(  )
 
-		self.b1.draw(  )
 		self.s1.draw(  )
-		self.f1.draw(  )
 
 		self.effectC.draw(  )
 		self.projectile.draw(  )

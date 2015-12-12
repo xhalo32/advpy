@@ -25,26 +25,37 @@ class Player():
 		self.damage = 0
 		self.dead = False
 
-		self.maxhealth = 10
+		self.maxhealth = 100
 		self.health = self.maxhealth
 		self.hpbar = Bars.DynamicHealthBar( self.scr, self.maxhealth )
 		self.rocketshoot_timer = 0
 
-	def shoot( self, color, radius, speed, damage ):
+	def shoot( self, data ):
 
-		self.projectile.mkUnit( self, color, self.rotation, radius, speed, damage, self.pos )
+		self.projectile.mkUnit( data )
 
 	def rocketshoot( self ):
 
-		self.rocketshoot_timer = 5
-		self.projectile.mkRPG( self, ( 250, 250, 0 ), ( 20, 100, 0 ),
-			self.rotation + random.randint( -10, 10 ), 6, 8, 2.5, self.pos )
+		self.rocketshoot_timer = 1
+		self.projectile.mkUnit( {
 
-		#self.projectile.mkUnit( self, ( 250, 250, 100 ),
-		#	self.rotation, self.parent.s1.sliderpos, 8, self.parent.s1.sliderpos, self.pos )
-
-		#self.projectile.mkUnit( self, ( 250, 250, 100 ),
-		#	self.rotation + 45, self.parent.s1.sliderpos, 8, self.parent.s1.sliderpos, self.pos )
+			"dad" : self,
+			"color" : ( 250, 250, 0 ),
+			"colorindex" : ( 20, 100, 0 ),
+			"angle" : self.rotation + random.randint( -10, 10 ),
+			"radius" : 8,
+			"speed" : 12,
+			"damage" : 8,
+			"lifetime" : 80,
+			"pos" : self.pos,
+			"type" : "TRAIL",
+			"exp" : { 
+					"radius" : 2,
+					"speed" : 5,
+					"amount" : 8,
+					"lifetime" : 60,
+				},
+			} )
 
 	def update( self ):
 
@@ -62,7 +73,24 @@ class Player():
 		self.x += self.svx
 		self.y += self.svy
 
-		self.pos = [self.x, self.y]
+		self.pos = [ self.x, self.y ]
+
+		v1 = self.vx * math.cos( ( 90 - self.rotation ) / rad )
+		v2 = self.vy * math.sin( ( 90 - self.rotation ) / rad )
+
+		if int( v1 ) == 0:
+			v2 *= math.sqrt( 2 )
+
+		elif int( v2 ) == 0:
+			v1 *= math.sqrt( 2 )
+
+		avg = ( v1 + v2 ) // 2
+
+		if avg > 1:
+
+			self.parent.effectC.mkExplosion2(
+				( 255, 170, 0 ), ( 0,100,0 ), avg / 2.0, 2 * avg, 10, 2 * avg,
+				self.pos, 180 + self.rotation )
 
 		if self.damage > 0 and self.health > 0:
 			self.health -= self.damage

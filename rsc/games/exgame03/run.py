@@ -5,13 +5,43 @@ from world import World
 from message import Messages
 
 p.init()
+debug = False
 
 class Run(  ):
 
 	def __init__( self ):
 
-		self.size = ( 1024, 768 )
-		self.scr = p.display.set_mode( self.size )
+		if debug:
+			self.size = ( 900, 700 )
+			self.scr = p.display.set_mode( self.size )
+		else:
+			self.size = ( 1024, 768 )
+			self.scr = p.display.set_mode( self.size, p.FULLSCREEN )
+
+		strings = ( 
+			"      xxxx      ",
+			"     xxxxxx     ",
+			"     xxxxxx     ",
+			"    xxx  xxx    ",
+			"    xxx  xxx    ",
+			"   xxx    xxx   ",
+			"   xxx    xxx   ",
+			"  xxx      xxx  ",
+			"  xxx      xxx  ",
+			" xxx        xxx ",
+			" xxx        xxx ",
+			"xxx          xxx",
+			"xxx          xxx",
+			"xxx          xxx",
+			"xxxxxxxxxxxxxxxx",
+			" xxxxxxxxxxxxxx ",
+			)
+
+		data, mask = p.cursors.compile( strings, 'x', '.', 'o' )
+		p.mouse.set_cursor( ( 16, 16 ), ( 0, 0 ), data, mask )
+		#p.mouse.set_cursor( *p.cursors.ball )
+
+
 		self.world = World( self )
 
 		self.active = True
@@ -21,14 +51,20 @@ class Run(  ):
 
 		self.events = [  ]
 
-	def _shoot( self, args ):
-
-		self.world.player.shoot( args[ 0 ], args[ 1 ], args[ 2 ], args[ 3 ] )
-
 	def eventListener( self ):
 
 		if p.mouse.get_pressed(  ) == ( 1, 0, 0 ):
-			self.world.player.shoot( ( 0, 200, 0), self.world.s1.sliderpos, 15, self.world.s1.sliderpos )
+			self.world.player.shoot( {
+			"dad" : self.world.player,
+			"color" : ( 250, 250, 0 ),
+			"colorindex" : ( 20, 100, 0 ),
+			"angle" : self.world.player.rotation,
+			"radius" : self.world.s1.sliderpos,
+			"speed" : 10,
+			"damage" : 0.4,
+			"lifetime" : 90,
+			"pos" : self.world.player.pos,
+			}  )
 
 		if p.mouse.get_pressed(  ) == ( 0, 0, 1 ) and self.world.player.rocketshoot_timer <= 0:
 			self.world.player.rocketshoot(  )

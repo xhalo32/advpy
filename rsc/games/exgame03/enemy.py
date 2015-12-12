@@ -25,6 +25,7 @@ class Enemy( object ):
 			self.shotcolor = data[ "shot" ][ "color" ]
 			self.colorindex = data[ "shot" ][ "expindex" ]
 			self.shotrate = data[ "shot" ][ "rate" ]
+			self.shotlife = data[ "shot" ][ "lifetime" ],
 
 			self.effectC = self.parent.parent.effectC
 			self.player = self.parent.player
@@ -42,7 +43,7 @@ class Enemy( object ):
 			self.dead = False
 			self.damage = 0
 			self.maxhealth = self.health
-			self.hpbar = Bars.DynamicHealthBar( self.scr, self.maxhealth )
+			self.hpbar = Bars.DynamicHealthBar( self.scr, self.maxhealth, 30 )
 
 		def update( self ):
 
@@ -62,11 +63,14 @@ class Enemy( object ):
 
 			if self.damage > 0 and self.health > 0:
 				self.health -= self.damage
+				if self.health <= 0:
+					
+					self.dead = 1
+					self.effectC.mkExplosion( ( 255, 0, 0 ), 1,
+						self.damage / 1.5, self.maxhealth * self.damage // 6, 100, self.pos )
+
 				self.damage = 0
 
-			if self.health <= 0:
-				self.dead = 1
-				self.effectC.mkExplosion( ( 255, 0, 0 ), 1, 5, 100, 80, self.pos )
 
 			index = 255.0 / self.maxhealth
 			self.healthcolor = [ int( 255 - index * self.health ), 
@@ -78,13 +82,24 @@ class Enemy( object ):
 
 		def shoot( self ):
 
-			self.parent.projectile.mkRPG( 
-				self,
-				self.shotcolor,
-				self.colorindex,
-				self.rotation + random.randint( -self.accuracy, self.accuracy ),
-				self.shotradius, self.shotspeed, self.shotdamage,
-				[ int( self.pos[ 0 ] ), int( self.pos[ 1 ] ) ] )
+			self.parent.projectile.mkUnit( {
+			"dad" : self,
+			"color" : self.shotcolor,
+			"colorindex" : self.colorindex,
+			"angle" : self.rotation + random.randint( -self.accuracy, self.accuracy ),
+			"radius" : self.shotradius,
+			"speed" : self.shotspeed,
+			"damage" : self.shotdamage,
+			"lifetime" : self.shotlife,
+			"pos" : self.pos,
+			"type" : "DEFAULT",
+			"exp" : { 
+					"radius" : 3,
+					"speed" : 5,
+					"amount" : 5,
+					"lifetime" : 40,
+				},
+			} )
 
 		def draw( self ):
 			
@@ -104,6 +119,7 @@ class Enemy( object ):
 		self.timer = 0
 
 		self.opponentlist = [  ]
+		self.opponent_amount = 2
 		self.totaldied = 0
 		self.recentdied = 0
 
@@ -111,24 +127,25 @@ class Enemy( object ):
 
 		self.timer += 1
 
-		if self.timer % 2 == 0:
-			for i in range( 5 - len( self.opponentlist ) ):
+		if self.timer % 100 == 0:
+			for i in range( self.opponent_amount - len( self.opponentlist ) ):
 
 				data = { 
 				"self" : self,
-				"radius" : 15,
-				"speed" : 2,
-				"health" : 10,
+				"radius" : 25,
+				"speed" : 3,
+				"health" : 500,
 				"accuracy" : 0,
 				"color" : ( 255, 0, 0 ),
 
 				"shot" : { 
-					"damage" : 1.5,
+					"damage" : 4,
+					"lifetime" : 80,
 					"speed" : 12,
-					"radius" : 5,
-					"rate" : 70,
+					"radius" : 6,
+					"rate" : 30,
 					"color" : ( 0, 255, 255 ),
-					"expindex" : ( 20, 100, 0 ),
+					"expindex" : ( 0, 100, 100 ),
 				 	},
 				}
 

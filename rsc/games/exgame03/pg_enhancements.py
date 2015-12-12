@@ -288,8 +288,8 @@ class Effect( object ):
 						[ x, y ],
 						self.size * random.randint( 1, 4 ),
 						i * angle,
-						self.speed + random.randint( -20, 20 ) / 10.0,
-						1.01 + random.randint( 0, 10 ) / 100.0,
+						self.speed + random.randint( -20, 20 ) / 4.0,
+						1.03 + random.randint( 0, 10 ) / 100.0,
 						self.parent.parent	) )
 
 		def update( self ):
@@ -544,11 +544,15 @@ class Bars( object ):
 			if self.barlist[ -1 ][ 0 ] <= 0:
 				del self.barlist[ -1 ]
 
-			self.barlist[ -1 ][ 1 ] = [ int( 255 - self.barindex * self.barlist[ -1 ][ 0 ] ), 
-								        int( self.barindex * self.barlist[ -1 ][ 0 ] ),
+			self.barlist[ -1 ][ 1 ] = [ abs( int( 255 - self.barindex * self.barlist[ -1 ][ 0 ] ) ), 
+								        abs( int( self.barindex * self.barlist[ -1 ][ 0 ] ) ),
 								        0 ]
 			d = 0
 			for b in self.barlist:
-				p.draw.rect( self.scr, b[ 1 ], [ center[ 0 ] - self.barlenght / 2 * b[ 0 ],
-											     center[ 1 ] + 11 * ( d + 2 ), self.barlenght * b[ 0 ], 8] )
+				try:
+					p.draw.rect( self.scr, b[ 1 ], 
+						[ center[ 0 ] - self.barlenght / 2 * b[ 0 ],
+						  center[ 1 ] + 11 * ( d + 3 ), self.barlenght * b[ 0 ], 8] )
+				except:
+					pass
 				d += 1

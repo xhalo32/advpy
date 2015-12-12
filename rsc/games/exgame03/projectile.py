@@ -14,14 +14,15 @@ class Projectile( object ):
 		def __init__( self, parent, data ):
 
 			self.parent = parent
+			self.data = data
+			self.dad = data[ "dad" ]
+			self.color = data[ "color"]
 			self.damage = data[ "damage" ]
 			self.radius = data[ "radius" ]
 			self.speed = data[ "speed" ]
 			self.angle = data[ "angle" ]
-			self.color = data[ "color"]
-			self.colorindex = data[ "colorindex"]
-			self.pos = data[ "pos" ]
-			self.dad = data[ "dad" ]
+			self.lifetime = data[ "lifetime" ]
+			self.pos = [ int( data[ "pos" ][ 0 ] ), int( data[ "pos" ][ 1 ] ) ]
 
 			try: self.type = getattr( Types, data[ "type" ] )( self )
 			except: self.type = Types.DEFAULT( self )
@@ -67,35 +68,7 @@ class Projectile( object ):
 
 			u.draw()
 
-	def mkUnit( self, parent, color, angle, radius, speed, damage, pos ):
-
-		data = { 
-			"dad" : parent,
-			"color" : color,
-			"angle" : angle,
-			"radius" : radius,
-			"speed" : speed,
-			"damage" : damage,
-			"pos" : pos,
-			}
-
-		self.projectiles.append(
-				self.Unit( self, data )
-			)
-
-	def mkRPG( self, parent, color, colorindex, angle, radius, speed, damage, pos ):
-
-		data = { 
-			"dad" : parent,
-			"color" : color,
-			"colorindex" : colorindex,
-			"angle" : angle,
-			"radius" : radius,
-			"speed" : speed,
-			"damage" : damage,
-			"pos" : pos,
-			"type" : "TRAIL"
-			}
+	def mkUnit( self, data ):
 
 		self.projectiles.append(
 				self.Unit( self, data )
