@@ -1,6 +1,8 @@
 import pygame as p
 import math
 from projectile_types import Types
+import sys
+sys.path.append( "/home/toor/Desktop/advpy/rsc/" )
 from complex import complex
 
 rad = ( 180.0 / math.pi )

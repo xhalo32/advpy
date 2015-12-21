@@ -1,4 +1,6 @@
 import pygame as pg
+import sys
+sys.path.append( "/home/toor/Desktop/advpy/rsc/" )
 import complex
 import random
 

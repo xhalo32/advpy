@@ -1,5 +1,7 @@
 import pygame as p
 import math, random
+import sys
+sys.path.append( "/home/toor/Desktop/advpy/rsc/" )
 
 from pg_enhancements import Bars
 from complex import complex
@@ -37,26 +39,29 @@ class Player():
 
 	def rocketshoot( self ):
 
-		self.rocketshoot_timer = 4
-		self.projectile.mkUnit( {
-
+		self.rocketshoot_timer = 30
+		data = {
 			"dad" : self,
-			"color" : ( 250, 250, 0 ),
+			"color" : ( 250, 250, 0, 125 ),
 			"colorindex" : ( 20, 100, 0 ),
-			"angle" : self.rotation + random.randint( -10, 10 ),
-			"radius" : 8,
-			"speed" : 12,
-			"damage" : 4,
-			"lifetime" : 80,
+			"angle" : self.rotation,
+			"radius" : 3,
+			"speed" : 18,
+			"damage" : 100,
+			"lifetime" : 30,
 			"pos" : self.pos,
 			"type" : "TRAIL",
 			"exp" : { 
 					"radius" : 2,
 					"speed" : 5,
-					"amount" : 8,
-					"lifetime" : 60,
-				},
-			} )
+					"amount" : 2,
+					"lifetime" : 30,
+				}
+			}
+
+		for i in range( 10 ):
+			data[ "angle" ] = self.rotation + random.randint( -10, 10 )
+			self.projectile.mkUnit( data )
 
 	def update( self ):
 
@@ -90,7 +95,7 @@ class Player():
 		if avg > 1:
 
 			self.parent.effectC.mkExplosion2(
-				( 255, 170, 0 ), ( 0,100,0 ), avg / 2.0, 2 * avg, 10, 2 * avg,
+				( 255, 170, 0, 200 ), ( 0,100,0 ), avg / 2.0, 2 * avg, 10, 2 * avg,
 				self.pos, 180 + self.rotation )
 
 		if self.damage > 0 and self.health > 0:

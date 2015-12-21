@@ -3,7 +3,6 @@ import math, random
 
 p.font.init(  )
 
-
 class Msg( object ):
 
 	@classmethod
@@ -226,6 +225,11 @@ class Effect( object ):
 
 	class Particle( object ):
 
+		'''
+		USE ALPHA IN EXPLOSIONS
+		'''
+		MAX_GRAPHICS = 0
+
 		def __init__( self, scr, color, pos, radius, angle, speed, drag, world ):
 
 			self.scr = scr
@@ -248,9 +252,22 @@ class Effect( object ):
 			self.pos[ 1 ] += self.speed * math.sin( self.angle / rad ) - self.vwsy
 
 		def draw( self ):
+	
+			size = self.scr.get_size( )
 
-			p.draw.circle( 
-			self.scr, self.color, [ int( self.pos[ 0 ] ), int( self.pos[ 1 ] ) ], int( self.radius ) )
+			if self.MAX_GRAPHICS:
+				s = p.Surface( size, p.SRCALPHA )
+
+				p.draw.circle( 
+				s, self.color, [ int( self.pos[ 0 ] ), int( self.pos[ 1 ] ) ],
+				int( self.radius ) ) 
+
+				self.scr.blit( s, [ 0, 0 ] )
+			else:
+				p.draw.circle( 
+				self.scr, self.color, [ int( self.pos[ 0 ] ), int( self.pos[ 1 ] ) ],
+				int( self.radius ) ) 
+
 
 			## --- ##
 
@@ -284,7 +301,8 @@ class Effect( object ):
 						self.scr,
 						[ self.color[ 0 ] - random.randint( 0, 100 ),
 						  self.color[ 1 ],
-						  self.color[ 2 ], ],
+						  self.color[ 2 ],
+						  self.color[ 3 ], ],
 						[ x, y ],
 						self.size * random.randint( 1, 4 ),
 						i * angle,
@@ -305,6 +323,8 @@ class Effect( object ):
 					i.radius -= .3
 
 		def draw( self ):
+
+			size = self.scr.get_size(  )
 
 			for i in self.particles:
 				i.draw(  )
@@ -339,7 +359,8 @@ class Effect( object ):
 						self.scr,
 						[ self.color[ 0 ] - random.randint( 0, self.colorindex[ 0 ] ),
 						  self.color[ 1 ] - random.randint( 0, self.colorindex[ 1 ] ),
-						  self.color[ 2 ] - random.randint( 0, self.colorindex[ 2 ] ), ],
+						  self.color[ 2 ] - random.randint( 0, self.colorindex[ 2 ] ), 
+						  self.color[ 3 ], ],
 						[ x, y ],
 						self.size * random.randint( 1, 4 ),
 						90 - self.angle + random.randint( -25, 25 ),
@@ -361,6 +382,8 @@ class Effect( object ):
 
 		def draw( self ):
 
+			size = self.scr.get_size(  )
+			
 			for i in self.particles:
 				i.draw(  )
 
@@ -543,8 +566,10 @@ class Bars( object ):
 
 			self.barlist[ -1 ][ 0 ] = health - ( self.bars - 1 ) * self.maxbarhealth
 
-			if self.barlist[ -1 ][ 0 ] <= 0:
-				del self.barlist[ -1 ]
+			try:
+				if self.barlist[ -1 ][ 0 ] <= 0:
+					del self.barlist[ -1 ]
+			except: pass
 
 			self.barlist[ -1 ][ 1 ] = [ abs( int( 255 - self.barindex * self.barlist[ -1 ][ 0 ] ) ), 
 								        abs( int( self.barindex * self.barlist[ -1 ][ 0 ] ) ),

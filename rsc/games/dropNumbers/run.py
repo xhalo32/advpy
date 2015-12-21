@@ -15,7 +15,7 @@ class Run():
 	def __init__(self):
 		
 		self.blocklist = []
-		self.scr = pg.display.set_mode((640, 480), pg.RESIZABLE)
+		self.scr = pg.display.set_mode((1024, 768), pg.FULLSCREEN)
 		self.clock = pg.time.Clock()
 
 		self.active = False
@@ -233,6 +233,12 @@ class Run():
 			for e in event:
 				if e.type == pg.QUIT:
 					self.active = False
+				if e.type == pg.KEYDOWN:
+
+					if e.key == pg.K_ESCAPE:
+						self.active = False
+						pg.quit(  )
+						quit(  )
 					
 			if self.score < 0:
 				self.active = False
@@ -259,7 +265,7 @@ class Run():
 			
 			pg.display.flip()
 			
-			clock.tick(self.FPS)
+			clock.tick( 40 )
 		
 		if self.losing:
 			self.lose()

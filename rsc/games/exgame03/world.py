@@ -1,4 +1,6 @@
 import pygame as p
+import sys
+sys.path.append( "/home/toor/Desktop/advpy/rsc/" )
 
 from player import Player
 from enemy import Enemy

@@ -185,9 +185,9 @@ class complex(object):
 		for i in range(len(pointlist)):
 			try:
 				if antialiased:
-					pygame.draw.line(window, color, pointlist[i], pointlist[i+1], lnwidth )
-				else:
 					pygame.draw.aaline(window, color, pointlist[i], pointlist[i+1], lnwidth )
+				else:
+					pygame.draw.line(window, color, pointlist[i], pointlist[i+1], lnwidth )
 			except:
 				pass
 

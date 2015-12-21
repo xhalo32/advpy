@@ -1,8 +1,6 @@
 import pygame as pg
 from complex import complex
 
-print complex
-
 window = pg.display.set_mode((600, 600))
 
 exit = 0
@@ -36,7 +34,7 @@ def run():
 
 		complex.triangle(window, (255, 255, 255), [200, 150], 20, x, usecenter=0)
 
-		complex.vector(window, (255, 255, 255), [200, 150], x, x, 1000, 1)
+		complex.vector(window, (255, 255, 255), [200, 150], x, x, 10)
 
 		complex.regpolygon(window, (255, 255, 255), [300, 300], 50, 7, x)
 

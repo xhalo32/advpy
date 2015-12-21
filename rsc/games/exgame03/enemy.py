@@ -1,5 +1,7 @@
 import pygame as p
 import math, random
+import sys
+sys.path.append( "/home/toor/Desktop/advpy/rsc/" )
 
 from pg_enhancements import Bars
 from complex import complex
@@ -35,8 +37,8 @@ class Enemy( object ):
 			self.projectile = self.parent.projectile
 
 			self.pos = [ 
-				-self.parent.parent.wsx / 2.0 + random.randint( - self.size[ 0 ], self.size[ 0 ] ),
-				-self.parent.parent.wsy / 2.0 + random.randint( - self.size[ 1 ], self.size[ 1 ] ) ]
+				-self.parent.parent.wsx / 2.0 + random.randint( - self.size[ 0 ] / 2, self.size[ 0 ] / 2 ),
+				-self.parent.parent.wsy / 2.0 + random.randint( - self.size[ 1 ] / 2, self.size[ 1 ] / 2 ) ]
 
 			self.rotation = 0
 			self.timer = 0
@@ -44,7 +46,7 @@ class Enemy( object ):
 			self.dead = False
 			self.damage = 0
 			self.maxhealth = self.health
-			self.hpbar = Bars.DynamicHealthBar( self.scr, self.maxhealth )
+			self.hpbar = Bars.DynamicHealthBar( self.scr, self.maxhealth, 30 )
 
 		def update( self ):
 
@@ -73,7 +75,7 @@ class Enemy( object ):
 					
 					self.dead = 1
 
-					self.effectC.mkExplosion( ( 255, 0, 0 ),
+					self.effectC.mkExplosion( ( 255, 0, 0, 200 ),
 						2 + self.damage / 100,
 						5 + self.damage / 50,
 						50 + self.maxhealth // 10,
@@ -129,7 +131,7 @@ class Enemy( object ):
 		self.timer = 0
 
 		self.opponentlist = [  ]
-		self.opponent_amount = 20
+		self.opponent_amount = 10
 		self.totaldied = 0
 		self.recentdied = 0
 
@@ -143,19 +145,19 @@ class Enemy( object ):
 				data = { 
 				"self" : self,
 				"radius" : 15,
-				"speed" : 3,
-				"health" : 20,
-				"protection" : 1,
-				"accuracy" : 0,
+				"speed" : 2,
+				"health" : 10,
+				"protection" : 0,
+				"accuracy" : 5,
 				"color" : ( 255, 0, 0 ),
 
 				"shot" : {
-					"damage" : 4,
+					"damage" : 1,
 					"lifetime" : 80,
-					"speed" : 12,
-					"radius" : 3,
-					"rate" : 50,
-					"color" : ( 0, 255, 255 ),
+					"speed" : 8,
+					"radius" : 2,
+					"rate" : 30,
+					"color" : ( 0, 255, 255, 100 ),
 					"expindex" : ( 0, 100, 100 ),
 				 	},
 				}

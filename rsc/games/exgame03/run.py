@@ -1,11 +1,34 @@
 import pygame as p
+from pygame.locals import *
 import time
 
 from world import World
 from message import Messages
 
-p.init()
+p.init(  )
+p.display.init(  )
 debug = False
+
+def toggle_fullscreen(  ):
+    screen = p.display.get_surface(  )
+    tmp = screen.convert(  )
+    caption = p.display.get_caption(  )
+    cursor = p.mouse.get_cursor(  )  # Duoas 16-04-2007 
+    
+    w,h = screen.get_width(  ),screen.get_height(  )
+    flags = screen.get_flags(  )
+    bits = screen.get_bitsize(  )
+    
+    p.display.quit(  )
+    p.display.init(  )
+    
+    screen = p.display.set_mode( ( w,h ), flags^FULLSCREEN, bits)
+    screen.blit( tmp, ( 0,0 )  )
+    p.display.set_caption( *caption )
+ 
+    p.key.set_mods( 0 ) #HACK: work-a-round for a SDL bug??
+    p.mouse.set_cursor( *cursor )  # Duoas 16-04-2007
+    return screen
 
 class Run(  ):
 
@@ -16,31 +39,31 @@ class Run(  ):
 			self.scr = p.display.set_mode( self.size )
 		else:
 			self.size = ( 1024, 768 )
-			self.scr = p.display.set_mode( self.size, p.FULLSCREEN )
+			self.scr = p.display.set_mode( self.size )
+			self.scr = toggle_fullscreen(  )
 
 		strings = ( 
-			"      xxxx      ",
-			"     xxxxxx     ",
-			"     xxxxxx     ",
-			"    xxx  xxx    ",
-			"    xxx  xxx    ",
-			"   xxx    xxx   ",
-			"   xxx    xxx   ",
-			"  xxx      xxx  ",
-			"  xxx      xxx  ",
-			" xxx        xxx ",
-			" xxx        xxx ",
-			"xxx          xxx",
-			"xxx          xxx",
-			"xxx          xxx",
-			"xxxxxxxxxxxxxxxx",
-			" xxxxxxxxxxxxxx ",
+			"      ....      ",
+			"     .xxxx.     ",
+			"     .xxxx.     ",
+			"    .xx  xx.    ",
+			"    .xx  xx.    ",
+			"   .xx    xx.   ",
+			"   .xx    xx.   ",
+			"  .xx      xx.  ",
+			"  .xx      xx.  ",
+			" .xx        xx. ",
+			" .xx        xx. ",
+			".xx          xx.",
+			".xx          xx.",
+			".xxxxxxxxxxxxxx.",
+			" .xxxxxxxxxxxx. ",
+			" .............. ",
 			)
 
 		data, mask = p.cursors.compile( strings, 'x', '.', 'o' )
 		p.mouse.set_cursor( ( 16, 16 ), ( 0, 0 ), data, mask )
 		#p.mouse.set_cursor( *p.cursors.ball )
-
 
 		self.world = World( self )
 
