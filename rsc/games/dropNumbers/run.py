@@ -15,7 +15,7 @@ class Run():
 	def __init__(self):
 		
 		self.blocklist = []
-		self.scr = pg.display.set_mode((1024, 768), pg.FULLSCREEN)
+		self.scr = pg.display.set_mode((1080, 720), pg.RESIZABLE)
 		self.clock = pg.time.Clock()
 
 		self.active = False
@@ -193,9 +193,12 @@ class Run():
 				if e.type == pg.QUIT:
 					pg.quit()
 					quit()
-				if e.type == pg.KEYDOWN:
+				elif e.type == pg.KEYDOWN:
 					if e.key == pg.K_SPACE:
 						self.loop()
+
+				elif e.type == pg.VIDEORESIZE:
+					self.scr = pg.display.set_mode( e.dict[ "size" ], pg.RESIZABLE )
 			
 			
 			speed_sliderpos = self.startSlider.run(self.speed)
@@ -223,6 +226,7 @@ class Run():
 		self.reset()
 		
 		self.blocklist = []
+		self.scr = pg.display.set_mode( self.scr.get_size() )
 		
 		while self.active:
 
@@ -233,7 +237,7 @@ class Run():
 			for e in event:
 				if e.type == pg.QUIT:
 					self.active = False
-				if e.type == pg.KEYDOWN:
+				elif e.type == pg.KEYDOWN:
 
 					if e.key == pg.K_ESCAPE:
 						self.active = False

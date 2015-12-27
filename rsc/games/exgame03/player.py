@@ -32,6 +32,7 @@ class Player():
 		self.health = self.maxhealth
 		self.hpbar = Bars.DynamicHealthBar( self.scr, self.maxhealth )
 		self.rocketshoot_timer = 0
+		self.shoot_timer = 0
 
 	def shoot( self, data ):
 
@@ -47,7 +48,7 @@ class Player():
 			"angle" : self.rotation,
 			"radius" : 3,
 			"speed" : 18,
-			"damage" : 100,
+			"damage" : 10,
 			"lifetime" : 30,
 			"pos" : self.pos,
 			"type" : "TRAIL",
@@ -66,6 +67,7 @@ class Player():
 	def update( self ):
 
 		self.rocketshoot_timer -= 1
+		self.shoot_timer -= 1
 		mpos = p.mouse.get_pos()
 
 		try:
@@ -79,6 +81,9 @@ class Player():
 		self.x += self.svx
 		self.y += self.svy
 
+		if self.health - 10 < self.maxhealth:
+			self.health += 1 / 60.
+
 		self.pos = [ self.x, self.y ]
 
 		v1 = self.vx * math.cos( ( 90 - self.rotation ) / rad )
@@ -86,7 +91,6 @@ class Player():
 
 		if int( v1 ) == 0:
 			v2 *= math.sqrt( 2 )
-
 		elif int( v2 ) == 0:
 			v1 *= math.sqrt( 2 )
 

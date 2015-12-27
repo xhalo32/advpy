@@ -66,9 +66,9 @@ class World( object ):
 			"color" : ( 0, 250, 100 ),
 			"colorindex" : ( 0, 100, 50 ),
 			"angle" : self.player.rotation,
-			"radius" : 3,
-			"speed" : 8,
-			"damage" : 1,
+			"radius" : 2,
+			"speed" : 16,
+			"damage" : 1.5,
 			"lifetime" : 90,
 			"pos" : self.player.pos,
 			}  )

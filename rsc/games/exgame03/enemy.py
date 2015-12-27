@@ -28,7 +28,7 @@ class Enemy( object ):
 			self.shotcolor = data[ "shot" ][ "color" ]
 			self.colorindex = data[ "shot" ][ "expindex" ]
 			self.shotrate = data[ "shot" ][ "rate" ]
-			self.shotlife = data[ "shot" ][ "lifetime" ],
+			self.shotlife = data[ "shot" ][ "lifetime" ]
 
 			self.effectC = self.parent.parent.effectC
 			self.player = self.parent.player
@@ -37,8 +37,8 @@ class Enemy( object ):
 			self.projectile = self.parent.projectile
 
 			self.pos = [ 
-				-self.parent.parent.wsx / 2.0 + random.randint( - self.size[ 0 ] / 2, self.size[ 0 ] / 2 ),
-				-self.parent.parent.wsy / 2.0 + random.randint( - self.size[ 1 ] / 2, self.size[ 1 ] / 2 ) ]
+				-self.parent.parent.wsx / 2.0 + random.randint( - self.size[ 0 ], self.size[ 0 ] ),
+				-self.parent.parent.wsy / 2.0 + random.randint( - self.size[ 1 ], self.size[ 1 ] ) ]
 
 			self.rotation = 0
 			self.timer = 0
@@ -46,7 +46,7 @@ class Enemy( object ):
 			self.dead = False
 			self.damage = 0
 			self.maxhealth = self.health
-			self.hpbar = Bars.DynamicHealthBar( self.scr, self.maxhealth, 30 )
+			self.hpbar = Bars.DynamicHealthBar( self.scr, self.maxhealth )
 
 		def update( self ):
 
@@ -63,6 +63,10 @@ class Enemy( object ):
 
 			self.pos[ 0 ] += - self.parent.parent.vwsx / 2.0 + self.speed * math.sin( self.radrotation )
 			self.pos[ 1 ] += - self.parent.parent.vwsy / 2.0 + self.speed * math.cos( self.radrotation )
+
+
+			self.health += 1 / 20.
+
 
 			if self.damage > 0 and self.health > 0:
 				try:
@@ -131,7 +135,7 @@ class Enemy( object ):
 		self.timer = 0
 
 		self.opponentlist = [  ]
-		self.opponent_amount = 10
+		self.opponent_amount = 3
 		self.totaldied = 0
 		self.recentdied = 0
 
@@ -139,24 +143,24 @@ class Enemy( object ):
 
 		self.timer += 1
 
-		if self.timer % 100 == 0:
+		if self.timer % 10 == 0:
 			for i in range( self.opponent_amount - len( self.opponentlist ) ):
 
 				data = { 
 				"self" : self,
-				"radius" : 15,
-				"speed" : 2,
-				"health" : 10,
+				"radius" : 40,
+				"speed" : 5,
+				"health" : 100,
 				"protection" : 0,
-				"accuracy" : 5,
-				"color" : ( 255, 0, 0 ),
+				"accuracy" : 3,
+				"color" : ( 255, 255, 0 ),
 
 				"shot" : {
 					"damage" : 1,
-					"lifetime" : 80,
-					"speed" : 8,
-					"radius" : 2,
-					"rate" : 30,
+					"lifetime" : 50,
+					"speed" : 10,
+					"radius" : 4,
+					"rate" : 2,
 					"color" : ( 0, 255, 255, 100 ),
 					"expindex" : ( 0, 100, 100 ),
 				 	},

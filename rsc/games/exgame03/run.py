@@ -39,8 +39,8 @@ class Run(  ):
 			self.scr = p.display.set_mode( self.size )
 		else:
 			self.size = ( 1024, 768 )
+			self.size = ( 1920, 1080 )
 			self.scr = p.display.set_mode( self.size )
-			self.scr = toggle_fullscreen(  )
 
 		strings = ( 
 			"      ....      ",
@@ -76,18 +76,19 @@ class Run(  ):
 
 	def eventListener( self ):
 
-		if p.mouse.get_pressed(  ) == ( 1, 0, 0 ):
+		if p.mouse.get_pressed(  ) == ( 1, 0, 0 ) and self.world.player.shoot_timer < 0:
 			self.world.player.shoot( {
 			"dad" : self.world.player,
 			"color" : ( 250, 250, 0 ),
 			"colorindex" : ( 20, 100, 0 ),
 			"angle" : self.world.player.rotation,
 			"radius" : self.world.s1.sliderpos,
-			"speed" : 10,
-			"damage" : 0.4,
+			"speed" : 7,
+			"damage" : 3,
 			"lifetime" : 90,
 			"pos" : self.world.player.pos,
 			}  )
+			self.world.player.shoot_timer = 2
 
 		if p.mouse.get_pressed(  ) == ( 0, 0, 1 ) and self.world.player.rocketshoot_timer <= 0:
 			self.world.player.rocketshoot(  )
