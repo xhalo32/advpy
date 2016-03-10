@@ -29,8 +29,8 @@ class Main( Entities ):
 
 	def init( self ):
 
-		self.size = ( 640, 420 )
-		#self.size = ( 1600, 900 )
+		#self.size = ( 1900, 1000 )
+		self.size = ( 800, 600 )
 		self.s = p.display.set_mode( self.size )
 		self.screenlock = threading.Lock(  )		
 

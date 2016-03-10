@@ -186,7 +186,7 @@ class Main:
 	def reset( self ):
 
 		self.p1 = self.Paddle( self, "Nige", "K_w", "K_s", "LEFT" )
-		self.p2 = self.Paddle( self, "Mace", "K_UP", "K_DOWN", "RIGHT" )
+		self.p2 = self.Paddle( self, "Dani", "K_UP", "K_DOWN", "RIGHT" )
 		self.items = Items( self )
 		self.end = False
 
@@ -198,7 +198,7 @@ class Main:
 				  cs[ randint( 0, 2 ) ],
 				  cs[ randint( 0, 2 ) ] ]
 
-			self.balllist.append( self.Ball( self, 8, ( 3, 4 ), c, ( BallTypes.DISTORT, ) ) )
+			self.balllist.append( self.Ball( self, 8, ( 3, 4 ), c, ( BallTypes.TROLL, ) ) )
 
 	def update( self ):
 		

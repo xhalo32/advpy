@@ -34,7 +34,7 @@ class Run( Main ):
 
 try:
 	r = Run(  )
-except:
+except: pass
 
 p.quit(  )
 quit(  )

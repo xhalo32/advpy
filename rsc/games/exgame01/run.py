@@ -24,14 +24,9 @@ class Loop:
 	def gameloop( self ):
 
 		self.keepmoving = 0
-
-		self.BUT = thd.Thread( target=self.game.update, args=(  ) )
-		self.BUT.start(  )
 		
 		try:
 			while self.run:
-
-				lasttime = time.time(  )
 
 				for e in pg.event.get():
 					if e.type == pg.QUIT:
@@ -41,14 +36,13 @@ class Loop:
 					if e.type == pg.KEYDOWN and e.key == pg.K_ESCAPE:
 						self.run = 0
 
+				self.game.update(  )
+
 				if pg.mouse.get_pressed()[ 0 ]: self.game.block.move(  )
 				if not pg.mouse.get_pressed()[ 0 ]: self.game.block.release(  )
 				if pg.mouse.get_pressed()[ 2 ]: self.game.block.create_unit(  )
 
 				self.game.draw(  )
-
-				self.FPS = 1.0 / ( time.time(  ) - lasttime )
-				self.msg.message( round( self.FPS, 1 ), ( 540, 10 ) )
 
 				pg.display.flip(  )
 

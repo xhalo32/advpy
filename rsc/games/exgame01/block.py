@@ -46,8 +46,6 @@ class Block:
 			x = self.Unit( ( 200, 25 * x, 20, 20 ), self )
 			self.ulist.append( x )
 
-		print self, 'INITIALIZED' 
-
 	def __call__( self, game, loop ):
 
 		self.game = game
@@ -69,30 +67,25 @@ class Block:
 		else: 
 			for u in self.ulist:
 
-				if pg.mouse.get_pos()[ 0 ] >= u.posdata[ 0 ] + self.mrel[ 0 ] and \
+				if pg.mouse.get_pos()[ 0 ] >= u.posdata[ 0 ] - self.mrel[ 0 ] and \
 					pg.mouse.get_pos()[ 0 ] <= u.posdata[ 0 ] + u.posdata[ 2 ] + self.mrel[ 0 ]:
 
-					if pg.mouse.get_pos()[ 1 ] >= u.posdata[ 1 ] + self.mrel[ 1 ] and \
+					if pg.mouse.get_pos()[ 1 ] >= u.posdata[ 1 ] - self.mrel[ 1 ] and \
 						pg.mouse.get_pos()[ 1 ] <= u.posdata[ 1 ] + u.posdata[ 3 ] + self.mrel[ 1 ]:
 
 						u.x += self.mrel[ 0 ]
 						u.y += self.mrel[ 1 ]
 
 						u.col = ( 15, 200, 150 )
+						u.grav_effect = 0
 						self.dragging = u
-						self.dragging.grav_effect = 0
 
 	def release( self ):
 
 		if self.dragging != None: self.dragging.grav_effect = 1
 		self.dragging = None
 
-	def update( self, FPS ):
-
-		# if FPS < self.loop.WFPS:
-
-		# 	del self.ulist[ 0 ]
-
+	def update( self ):
 		tobeterminated = [  ]
 
 		for u in range(len(self.ulist)):
@@ -121,15 +114,6 @@ class Block:
 			pass
 
 		self.mrel = pg.mouse.get_rel(  )
-
-		if self.dragging != None:
-
-			if pg.mouse.get_pos()[ 0 ] >= self.dragging.x + self.mrel[ 0 ] and \
-				pg.mouse.get_pos()[ 0 ] <= self.dragging.x + self.dragging.w + self.mrel[ 0 ] and \
-				pg.mouse.get_pos()[ 1 ] >= self.dragging.y + self.mrel[ 1 ] and \
-				pg.mouse.get_pos()[ 1 ] <= self.dragging.y + self.dragging.h + self.mrel[ 1 ]:
-				pass
-			else: self.release(  )
 
 		self.hit_test(  )
 

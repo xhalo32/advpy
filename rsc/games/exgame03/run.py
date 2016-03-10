@@ -9,27 +9,6 @@ p.init(  )
 p.display.init(  )
 debug = False
 
-def toggle_fullscreen(  ):
-    screen = p.display.get_surface(  )
-    tmp = screen.convert(  )
-    caption = p.display.get_caption(  )
-    cursor = p.mouse.get_cursor(  )  # Duoas 16-04-2007 
-    
-    w,h = screen.get_width(  ),screen.get_height(  )
-    flags = screen.get_flags(  )
-    bits = screen.get_bitsize(  )
-    
-    p.display.quit(  )
-    p.display.init(  )
-    
-    screen = p.display.set_mode( ( w,h ), flags^FULLSCREEN, bits)
-    screen.blit( tmp, ( 0,0 )  )
-    p.display.set_caption( *caption )
- 
-    p.key.set_mods( 0 ) #HACK: work-a-round for a SDL bug??
-    p.mouse.set_cursor( *cursor )  # Duoas 16-04-2007
-    return screen
-
 class Run(  ):
 
 	def __init__( self ):
@@ -38,9 +17,8 @@ class Run(  ):
 			self.size = ( 900, 700 )
 			self.scr = p.display.set_mode( self.size )
 		else:
-			self.size = ( 1024, 768 )
 			self.size = ( 1920, 1080 )
-			self.scr = p.display.set_mode( self.size )
+			self.scr = p.display.set_mode( self.size, FULLSCREEN )
 
 		strings = ( 
 			"      ....      ",

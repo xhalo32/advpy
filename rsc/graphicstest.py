@@ -36,13 +36,13 @@ def run():
 
 		complex.vector(window, (255, 255, 255), [200, 150], x, x, 10)
 
-		complex.regpolygon(window, (255, 255, 255), [300, 300], 50, 7, x)
+		complex.regpolygon(window, (255, 255, 255), [300, 300], 50, 10, x)
 
 		complex.vector(window, (255, 255, 0), [300, 300], 0, x, 1)
 
 		complex.regstar(window, (255, 255, 255), [250, 400], 50, 9, 45, 2)
 
-		complex.reggramm(window, (255, 255, 255), [100, 300], 80, 8, 18)
+		complex.reggramm(window, (255, 255, 255), [100, 300], 80, 5, 18)
 
 
 

@@ -55,6 +55,54 @@ class Items:
 				c = randcol( ( [ 0 ], [ 200, 232, 255 ], [ 200, 232, 255 ] ) )
 				p.draw.rect( self.main.s, c, [ self.x, self.y, self.w, self.h ] )
 
+	class COFFEE:
+
+		def __init__( self, main, lasts, level ):
+
+			self.main = main
+			self.p1 = main.p1
+			self.p2 = main.p2
+
+			size = main.s.get_size(  )
+			self.x = randint( size[ 0 ] // 5, size[ 0 ] // ( 5. / 4. ) )
+			self.y = randint( size[ 1 ] // 5, size[ 1 ] // ( 5. / 4. ) )
+			self.w = 10
+			self.h = 20
+
+			self.timer = lasts
+			self.level = float( level )
+			self.target = None
+			self.dead = False
+			self.vdead = False
+			self.target_type = None
+
+		def update( self ):
+
+			if not self.vdead:
+				for b in self.main.balllist:		
+
+					if b.x + b.r > self.x and b.x - b.r < self.x + self.w and \
+						b.y + b.r > self.y and b.y - b.r < self.y + self.h:
+
+						b.speed /= self.level
+						self.target = b
+						self.vdead = 1
+
+			if self.vdead:
+				self.timer -= 1
+
+				if self.timer < 0:
+					self.target.speed *= self.level
+					self.dead = 1
+
+		def draw( self ):
+
+			from main import randcol
+			if not self.vdead:
+
+				c = randcol( ( [ 200, 232, 255 ], [ 170, 200, 227 ], [ 50, 90 ] ) )
+				p.draw.rect( self.main.s, c, [ self.x, self.y, self.w, self.h ] )
+
 	class LONGENER:
 
 		def __init__( self, main, lasts, length ):
@@ -259,13 +307,16 @@ class Items:
 				self.ENERGY_DRINK( self.main, 120, 1.5 ) )
 
 			self.itemlist.append( 
+				self.COFFEE( self.main, 300, 1.5 ) )
+
+			self.itemlist.append( 
 				self.LONGENER( self.main, 300, 100 ) )
 
 			self.itemlist.append( 
-				self.SPEEDUP( self.main, 400, 3 ) )
+				self.SPEEDUP( self.main, 400, 30 ) )
 
 			self.itemlist.append( 
-				self.TROLLER( self.main, 250, 20 ) )
+				self.TROLLER( self.main, 250, 90 ) )
 
 		l = list( self.itemlist )
 		for i in self.itemlist:

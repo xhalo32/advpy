@@ -148,15 +148,15 @@ class Enemy( object ):
 
 				data = { 
 				"self" : self,
-				"radius" : 40,
-				"speed" : 5,
-				"health" : 100,
+				"radius" : 20,
+				"speed" : 2,
+				"health" : 10,
 				"protection" : 0,
 				"accuracy" : 3,
-				"color" : ( 255, 255, 0 ),
+				"color" : ( 255, 0, 0 ),
 
 				"shot" : {
-					"damage" : 1,
+					"damage" : .1,
 					"lifetime" : 50,
 					"speed" : 10,
 					"radius" : 4,

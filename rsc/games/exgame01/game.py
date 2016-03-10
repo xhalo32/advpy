@@ -19,21 +19,13 @@ class Game:
 
 		self.block( self, self.loop )
 
-		print self, 'INITIALIZED' 
-
 	def update( self ):
 
-		clock = pg.time.Clock(  )
+		lasttime = time.time(  )
 
-		while self.loop.run:
+		self.block.update(  )
 
-			lasttime = time.time(  )
-
-			self.block.update( self.FPS )
-
-			self.FPS = 1.0 / ( time.time(  ) - lasttime )
-
-			clock.tick( 60 )
+		self.FPS = 1.0 / ( time.time(  ) - lasttime )
 
 	def draw( self ):
 

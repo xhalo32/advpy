@@ -456,7 +456,8 @@ class Decorations( object ):
 
 					p.draw.rect( self.window, self.color, [ 
 						self.pos[ 0 ] + i,
-						self.pos[ 1 ] + int( self.pos[ 3 ] / 4 * math.sin( self.rotspeed * ( i + self.index ) / rad ) * i / self.pos[ 2 ] ),
+						self.pos[ 1 ] + int( self.pos[ 3 ] / 4 * \
+							math.sin( self.rotspeed * ( i + self.index ) / rad ) * i / self.pos[ 2 ] ),
 						1,
 						self.pos[ 3 ] ] )
 

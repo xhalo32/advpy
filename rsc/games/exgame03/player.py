@@ -40,7 +40,7 @@ class Player():
 
 	def rocketshoot( self ):
 
-		self.rocketshoot_timer = 30
+		self.rocketshoot_timer = 1
 		data = {
 			"dad" : self,
 			"color" : ( 250, 250, 0, 125 ),
