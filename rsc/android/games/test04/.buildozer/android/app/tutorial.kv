@@ -1,0 +1,33 @@
+#:import random random
+
+<ScatterTextWidget>:
+	orientation: 'vertical'
+
+	TextInput:
+		id: text_input
+		font_size: 120
+		size_hint_y: None
+		height: 150
+		text: 'default'
+		on_text: root.CRC(  )
+
+	FloatLayout:
+		Scatter:
+			Label:
+				id: text_label
+				text: text_input.text
+				font_size: 120
+				pos: [ 300, 100 ]
+
+	BoxLayout:
+		orientation: 'horizontal'
+		size_hint_y: None
+		height: 150
+		Label:
+			id: label1
+			text: text_input.text[ :3 ][ ::-1 ]
+			font_size: 100
+		Label:
+			id: label2
+			text: text_input.text[ -3: ][ ::-1 ]
+			font_size: 100
