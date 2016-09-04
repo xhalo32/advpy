@@ -185,15 +185,15 @@ class Main:
 
 	def reset( self ):
 
-		self.p1 = self.Paddle( self, "Nige", "K_w", "K_s", "LEFT" )
-		self.p2 = self.Paddle( self, "Dani", "K_UP", "K_DOWN", "RIGHT" )
+		self.p1 = self.Paddle( self, "P1", "K_w", "K_s", "LEFT" )
+		self.p2 = self.Paddle( self, "P2", "K_UP", "K_DOWN", "RIGHT" )
 		self.items = Items( self )
 		self.end = False
 
 		self.balllist = [  ]
 
 		cs = [ 63, 127, 255 ]
-		for i in range( 4 ):
+		for i in range( 40 ):
 			c = [ cs[ randint( 0, 2 ) ],
 				  cs[ randint( 0, 2 ) ],
 				  cs[ randint( 0, 2 ) ] ]
