@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Categories=Settings;
+Name=Gamma
+Comment=
+Exec=python /home/toor/Desktop/advpy/rsc/Tkinter/gammasettings.py
+Icon=colorhug
+Terminal=false
+StartupNotify=false
