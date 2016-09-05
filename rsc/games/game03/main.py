@@ -30,7 +30,8 @@ class Main:
 		self.handler = Handler( self )
 		self.objs = self.handler.object_list
 		self.cl = self.handler.cl
-		self.showfps = 0
+		self.showfps = 2
+		self.debug = 0
 		
 
 		self.handler.create( "Snake", { "speed" : [2,0] } )
@@ -43,6 +44,9 @@ class Main:
 			"LT" : p.K_LEFT,
 			"color" : [ 200,200,50 ],
 		} )
+
+
+		self.handler.menu.activate_menu( "Main" )
 
 		self.loop(  )
 
@@ -112,8 +116,7 @@ class Main:
 
 			self.handler.update(  )
 
-
-			self.scr.fill( ( 230,230,230 ) )
+			self.scr.fill( [ x + 232 for x in ( 0,0,0 ) ] )
 
 			self.handler.draw(  )
 			

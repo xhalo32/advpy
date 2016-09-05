@@ -8,16 +8,20 @@ class Items:
 
 	class Apple:
 
-		def __init__( self, parent, pos ):
+		def __init__( self, parent, vars="" ):
 
 			self.parent = parent
 			self.main = self.parent.main
-			self.pos = pos
 			self.radius = 10
+			
+			self.pos = [ int( random(  ) * ( self.main.scr.get_width(  ) - 20 ) + 10 ), int( random(  ) * ( self.main.scr.get_height(  ) - 20 ) + 10 ) ]
 			self.grid_index = self.main.get_gindex( self.pos )
-			print self.grid_index
 
 			self.dead = 0
+
+			for var in vars:
+				try: setattr( self, var, vars[ var ] )
+				except Exception as e: print e
 
 		def update( self ):
 			pass
@@ -26,13 +30,16 @@ class Items:
 
 			p.draw.circle( self.main.scr, [ 255, 50, 50 ], self.pos, 10 )
 
-			msg(	self.main.scr, 
-					str(self.grid_index[ 0 ]) + " " + str(self.grid_index[ 1 ]), 
-					[ self.pos[ 0 ], self.pos[ 1 ] + 20], 
-					( 0,0,0 ),
-					15,
-					centered=True 
-			)
+
+			
+			if self.main.debug:
+				msg(	self.main.scr, 
+						str(self.grid_index[ 0 ]) + " " + str(self.grid_index[ 1 ]), 
+						[ self.pos[ 0 ], self.pos[ 1 ] + 20], 
+						( 0,0,0 ),
+						15,
+						centered=True 
+				)
 
 
 
@@ -48,7 +55,7 @@ class Items:
 
 	def generate( self, t, *arguments ):
 
-		try: 		getattr( self, t.lower(  ) + "list" ).append( getattr( self, t )( self, *arguments ) )
+		try: getattr( self, t.lower(  ) + "list" ).append( getattr( self, t )( self, *arguments ) )
 		except Exception as e: 	print e
 
 	def update( self ):

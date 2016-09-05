@@ -1,8 +1,10 @@
 import pygame as p
+from random import *
+
 from snake import *
 from items import *
+from menu import *
 from commandline import *
-from random import *
 
 
 
@@ -18,14 +20,14 @@ class Handler:
 		self.Snake = Snake
 		self.effects = Effect( self.main )
 		self.items = Items( self.main )
+		self.items = Items( self.main )
+		self.menu = Menu( self.main )
 
 		self.events = [  ]
 		self.object_list = [  ]
 
 		for i in range( 10 ):
-			self.items.generate( "Apple", 
-				[ int( random(  ) * ( self.main.scr.get_width(  ) - 20 ) + 10 ),
-				 int( random(  ) * ( self.main.scr.get_height(  ) - 20 ) + 10 ) ] )
+			self.items.generate( "Apple" )
 
 
 	def create( self, obj, *attributes ):
@@ -40,11 +42,12 @@ class Handler:
 			if e.type == p.QUIT: self.main.active = False
 			elif e.type == p.KEYDOWN: 
 				if e.key == p.K_r: self.main.reset(  )
+				if e.key == p.K_ESCAPE: self.menu.activate_menu( "Pause" )
 
 			#if e.type == p.KEYDOWN:
 			#	print e.key
 
-		self.cl.update(  )
+		self.cl.get_events(  )
 
 	def update( self ):
 
@@ -69,7 +72,7 @@ class Handler:
 		for obj in self.object_list:
 			obj.draw(  )
 
-		if self.main.showfps:
+		if self.main.showfps and self.main.delta != 0:
 			msg(	self.main.scr, 
 					round( 1. / self.main.delta, self.main.showfps ), 
 					[ 0, self.main.scr.get_height(  ) - 15 ], 

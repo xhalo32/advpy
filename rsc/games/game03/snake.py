@@ -2,13 +2,14 @@ import pygame as p
 from pg_enhancements import *
 from message import *
 from math import *
+from random import *
 
 
 
 
 class Snake:
 
-	def __init__( self, main, vars ):
+	def __init__( self, main, vars="" ):
 
 		self.main = main
 
@@ -21,6 +22,7 @@ class Snake:
 		self.color2 = [ 200, 100, 200 ]
 		self.fade = 1
 		self.cooldown = 0
+		self.collide_with_snakes = 1
 
 		self.UP = p.K_w
 		self.DN = p.K_s
@@ -86,29 +88,23 @@ class Snake:
 
 						self.lenght += a.radius
 
-		for s in self.main.handler.object_list:
-			if type( s ) == type( self ) and s != self:
-
-				delta = floor( len( s.snakelist ) / float( self.radius ) ) * s.spd
-				print delta
+						for i in range( 2 ):
+							self.main.handler.items.generate( "Apple" )
 
 
-				for i in range( int( delta ) ):
-
-					index = int( i * self.radius / float( s.spd ) )
-
-					if self.grid_index == self.main.get_gindex( s.snakelist[ index ] ):
-
-						if self.pos[ 0 ] - self.hitradius < s.snakelist[ index ][ 0 ] + s.hitradius and \
-						self.pos[ 0 ] + self.hitradius > s.snakelist[ index ][ 0 ] - s.hitradius:
-
-							if self.pos[ 1 ] - self.hitradius < s.snakelist[ index ][ 1 ] + s.hitradius and \
-							self.pos[ 1 ] + self.hitradius > s.snakelist[ index ][ 1 ] - s.hitradius:
-
-								
-								self.dead = 1
-
-								s.lenght += self.lenght // 2
+		if self.collide_with_snakes:
+			for s in self.main.handler.object_list:
+				if type( s ) == type( self ) and s != self:
+					delta = floor( len( s.snakelist ) / float( self.radius ) ) * s.spd
+					for i in range( int( delta ) ):
+						index = int( i * self.radius / float( s.spd ) )
+						if self.grid_index == self.main.get_gindex( s.snakelist[ index ] ):
+							if self.pos[ 0 ] - self.hitradius < s.snakelist[ index ][ 0 ] + s.hitradius and \
+							self.pos[ 0 ] + self.hitradius > s.snakelist[ index ][ 0 ] - s.hitradius:
+								if self.pos[ 1 ] - self.hitradius < s.snakelist[ index ][ 1 ] + s.hitradius and \
+								self.pos[ 1 ] + self.hitradius > s.snakelist[ index ][ 1 ] - s.hitradius:
+									self.dead = 1
+									s.lenght += self.lenght // 2
 
 
 
@@ -138,10 +134,12 @@ class Snake:
 				c = self.color
 				p.draw.circle( self.main.scr, c, self.snakelist[n], self.radius )
 
-		msg(	self.main.scr, 
-				str(self.grid_index[ 0 ]) + " " + str(self.grid_index[ 1 ]), 
-				[ self.pos[ 0 ], self.pos[ 1 ] + 20], 
-				( 0,0,0 ),
-				15,
-				centered=True 
-		)
+
+		if self.main.debug:
+			msg(	self.main.scr, 
+					str(self.grid_index[ 0 ]) + " " + str(self.grid_index[ 1 ]), 
+					[ self.pos[ 0 ], self.pos[ 1 ] + 20], 
+					( 0,0,0 ),
+					15,
+					centered=True 
+			)

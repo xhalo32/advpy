@@ -178,8 +178,8 @@ class Commandline:
 		for i in range( len( self.returns ) ):
 			p.draw.rect( self.main.scr, self.returns[ - i - 1 ][ 2 ], 			[ 0,self.fontsize * ( i+1 ) + 5,self.main.scr.get_width(),self.fontsize + 5 ] )
 
-			msg( 		self.main.scr, str( self.returns[ - i - 1 ][ 1 ] ) + " >>> " + str( self.returns[ - i - 1 ][ 0 ] ),
-						[ 0, self.fontsize * ( i+1 ) + 5 ], ( 0,0,0 ), size=self.fontsize )
+			msg( self.main.scr, str( self.returns[ - i - 1 ][ 1 ] ) + " >>> " + str( self.returns[ - i - 1 ][ 0 ] ),
+				[ 0, self.fontsize * ( i+1 ) + 5 ], ( 0,0,0 ), size=self.fontsize )
 
 
 	def get_events( self ):
@@ -204,8 +204,3 @@ class Commandline:
 				if e.key == p.K_MINUS:
 
 					self.active = 1
-
-
-	def update( self ):
-
-		self.get_events(  )
