@@ -33,9 +33,8 @@ class Main:
 		self.showfps = 0
 		
 
-		self.handler.create( "Snake", { "lenght" : 100, "speed" : [2,0] } )
+		self.handler.create( "Snake", { "speed" : [2,0] } )
 		self.handler.create( "Snake", { 
-			"lenght" : 100,
 			"speed" : [2,0],
 			"pos" : [ 100,100 ],
 			"DN" : p.K_DOWN,

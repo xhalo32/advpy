@@ -1,6 +1,7 @@
 import pygame as p
 from pg_enhancements import *
 from message import *
+from math import *
 
 
 
@@ -27,7 +28,7 @@ class Snake:
 		self.RT = p.K_d
 
 		self.snakelist = [  ]
-		self.lenght = 5
+		self.lenght = 100
 		self.grid_index = self.main.get_gindex( self.pos )
 
 
@@ -82,10 +83,32 @@ class Snake:
 				if self.pos[ 0 ] - self.hitradius < a.pos[ 0 ] + a.radius and self.pos[ 0 ] + self.hitradius > a.pos[ 0 ] - a.radius:
 					if self.pos[ 1 ] - self.hitradius < a.pos[ 1 ] + a.radius and self.pos[ 1 ] + self.hitradius > a.pos[ 1 ] - a.radius:
 						a.dead = 1
-						
+
 						self.lenght += a.radius
 
+		for s in self.main.handler.object_list:
+			if type( s ) == type( self ) and s != self:
 
+				delta = floor( len( s.snakelist ) / float( self.radius ) ) * s.spd
+				print delta
+
+
+				for i in range( int( delta ) ):
+
+					index = int( i * self.radius / float( s.spd ) )
+
+					if self.grid_index == self.main.get_gindex( s.snakelist[ index ] ):
+
+						if self.pos[ 0 ] - self.hitradius < s.snakelist[ index ][ 0 ] + s.hitradius and \
+						self.pos[ 0 ] + self.hitradius > s.snakelist[ index ][ 0 ] - s.hitradius:
+
+							if self.pos[ 1 ] - self.hitradius < s.snakelist[ index ][ 1 ] + s.hitradius and \
+							self.pos[ 1 ] + self.hitradius > s.snakelist[ index ][ 1 ] - s.hitradius:
+
+								
+								self.dead = 1
+
+								s.lenght += self.lenght // 2
 
 
 
