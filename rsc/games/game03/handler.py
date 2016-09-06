@@ -26,6 +26,11 @@ class Handler:
 		self.events = [  ]
 		self.object_list = [  ]
 
+	def reset( self ):
+
+		self.object_list = [  ]
+		self.items.clearall(  )
+
 		for i in range( 10 ):
 			self.items.generate( "Apple" )
 

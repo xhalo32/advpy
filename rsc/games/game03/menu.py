@@ -78,7 +78,7 @@ class Menu:
 			elif not self.holding_space: self.hold_space -= 3
 			if self.hold_space < 0: self.hold_space = 0
 
-			if self.hold_space > self.hold_space_time: self.dead = 1
+			if self.hold_space > self.hold_space_time: self.dead = 1; self.main.reset(  )
 
 			self.main.cl.get_events(  )
 
@@ -122,7 +122,8 @@ class Menu:
 				if e.type == p.QUIT: p.quit(  ); quit(  )
 
 				if e.type == p.KEYDOWN:
-					if e.key == p.K_ESCAPE: self.dead = 1
+					if e.key == p.K_SPACE: self.dead = 1
+					elif e.key == p.K_ESCAPE: self.dead = 1; self.parent.replace_menu( "Main" )
 
 			self.main.cl.get_events(  )
 
@@ -132,11 +133,18 @@ class Menu:
 			if self.once:
 				size = self.main.scr.get_size(  )
 
-				msg( self.main.scr, "CONTINUE", [ size[ 0 ] / 2. - 1, size[ 1 ] / 2. - 1 ], ( 40,40,40 ), bold=1, centered=1 )
-				msg( self.main.scr, "CONTINUE", [ size[ 0 ] / 2., size[ 1 ] / 2. ], ( 80,80,80 ), bold=1, centered=1 )
+				msg( self.main.scr, "CONTINUE", [ size[ 0 ] / 2. - 1, 	size[ 1 ] / 2. - 50 - 1 	], ( 40,100,40 ), bold=1, centered=1 )
+				msg( self.main.scr, "CONTINUE", [ size[ 0 ] / 2., 		size[ 1 ] / 2. - 50 		], ( 80,200,80 ), bold=1, centered=1 )
 
-				msg( self.main.scr, "[ESC]", [ size[ 0 ] / 2. - 1, size[ 1 ] / 2. + 25 - 1 ], ( 100,100,100 ), centered=1 )
-				msg( self.main.scr, "[ESC]", [ size[ 0 ] / 2., size[ 1 ] / 2. + 25 ], ( 150,150,150 ), centered=1 )
+				msg( self.main.scr, "[SPACE]", [ size[ 0 ] / 2. - 1, 	size[ 1 ] / 2. - 25 - 1 	], ( 100,100,100 ), centered=1 )
+				msg( self.main.scr, "[SPACE]", [ size[ 0 ] / 2., 		size[ 1 ] / 2. - 25 		], ( 150,150,150 ), centered=1 )
+
+
+				msg( self.main.scr, "MAIN MENU", [ size[ 0 ] / 2. - 1, 	size[ 1 ] / 2. + 25 - 1 	], ( 40,40,100 ), bold=1, centered=1 )
+				msg( self.main.scr, "MAIN MENU", [ size[ 0 ] / 2., 		size[ 1 ] / 2. + 25 		], ( 80,80,200 ), bold=1, centered=1 )
+
+				msg( self.main.scr, "[ESCAPE]", [ size[ 0 ] / 2. - 1, 	size[ 1 ] / 2. + 50 - 1 	], ( 100,100,100 ), centered=1 )
+				msg( self.main.scr, "[ESCAPE]", [ size[ 0 ] / 2., 		size[ 1 ] / 2. + 50 		], ( 150,150,150 ), centered=1 )
 
 				p.display.update(  )
 				self.once = 0
@@ -153,9 +161,25 @@ class Menu:
 
 		self.active_menus = [  ]
 
+	def get_menu( self, name ):
+
+		return getattr( self, name )
+
+	def replace_menu( self, name ):
+
+		if len(self.active_menus) > 0:
+			self.active_menus[ -1 ] = self.get_menu( name )
+			self.active_menus[ -1 ].init( self )
+		else: self.active_menus.append( self.get_menu( name ) )
+
+
 	def activate_menu( self, name ):
 
-		self.active_menus.append( getattr( self, name ) ); self.active_menus[ -1 ].init( self )
+		now = self.get_menu( name )
+		now.init( self )
+		
+		self.active_menus.append( now )
+
 
 		clock = p.time.Clock(  )
 		while len( self.active_menus ) > 0:
@@ -163,6 +187,6 @@ class Menu:
 			self.active_menus[ -1 ].update(  )
 			self.active_menus[ -1 ].draw(  )
 
-			if self.active_menus[ -1 ].dead: del self.active_menus[ -1 ]
+			if self.active_menus[ -1 ].dead: del self.active_menus[ -1 ];
 
 			clock.tick( 60 )

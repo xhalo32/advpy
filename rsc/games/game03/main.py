@@ -22,9 +22,8 @@ class Main:
 
 		self.active = 1
 		self.FPS = 60
-		self.command = ""
 		self.gridsize = [ 8, 8 ]
-		self.lt = self.nt = self.delta = 0
+
 		
 
 		self.handler = Handler( self )
@@ -33,6 +32,22 @@ class Main:
 		self.showfps = 2
 		self.debug = 0
 		
+		self.reset(  )
+
+
+		self.handler.menu.activate_menu( "Main" )
+
+		self.loop(  )
+
+	def reset( self ):
+		
+
+
+
+		self.command = ""
+		self.lt = self.nt = self.delta = 0
+
+		self.handler.reset(  )
 
 		self.handler.create( "Snake", { "speed" : [2,0] } )
 		self.handler.create( "Snake", { 
@@ -46,12 +61,7 @@ class Main:
 		} )
 
 
-		self.handler.menu.activate_menu( "Main" )
 
-		self.loop(  )
-
-	def reset( self ):
-		self.__init__(  )
 
 	def exec_command( self, com ):
 		#exec( com )

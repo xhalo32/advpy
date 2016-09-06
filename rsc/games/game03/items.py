@@ -58,6 +58,10 @@ class Items:
 		try: getattr( self, t.lower(  ) + "list" ).append( getattr( self, t )( self, *arguments ) )
 		except Exception as e: 	print e
 
+	def clearall( self ):
+
+		self.applelist = [  ]
+
 	def update( self ):
 
 		tl = [  ]
