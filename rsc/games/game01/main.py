@@ -72,7 +72,32 @@ class Main:
 				if self.hitcooldown < 0:
 					if self.x + self.r > p.x and self.x - self.r < p.x + p.w and \
 					   self.y + self.r > p.y and self.y - self.r < p.y + p.h:
-						self.angle = 180 + ( ( 360 - self.angle ) % 360 ) + randint( -30, 30 )
+
+						self.angle %= 360
+						
+						print self.angle
+
+						if p == self.par.p1: 
+							if self.par.p1.m < 0: 
+								if not ( 270 > self.angle > 220 ):
+									self.angle += 30
+
+							elif self.par.p1.m > 0:
+								if not ( 90 < self.angle < 160 ):
+									self.angle -= 30
+
+						elif p == self.par.p2: 
+							if self.par.p2.m < 0: 
+								if not ( 270 < self.angle < 320 ):
+									self.angle -= 30
+
+							elif self.par.p2.m > 0:
+								if not ( 90 > self.angle > 40 ):
+									self.angle += 30
+
+						self.angle = 180 + 360 - self.angle
+						#+ ( 45 * ( self.y - (p.y + p.h / 2.) ) / ( p.h / 2. ) )    ##randint( -30, 30 ) ## angle on impact
+
 
 						if p.x + p.w / 2 - self.x > 0:
 							self.x = p.x - self.r
@@ -85,9 +110,11 @@ class Main:
 
 			if self.x - self.r > self.par.s.get_size(  )[ 0 ]:
 				self.dead = True
+				self.par.score[0] += 1
 
 			elif self.x + self.r < 0:
 				self.dead = True
+				self.par.score[1] += 1
 
 			if self.y + self.r > self.par.s.get_size(  )[ 1 ]:
 				self.angle = ( ( 360 - self.angle ) % 360 ) + randint( -1, 1 )
@@ -178,7 +205,7 @@ class Main:
 	def __init__( self ):
 
 		self.size = ( 640, 480 )
-		self.s = p.display.set_mode( self.size )
+		self.s = p.display.set_mode( self.size ) #, p.FULLSCREEN
 
 		self.reset(  )
 		self.debug = 0
@@ -189,16 +216,22 @@ class Main:
 		self.p2 = self.Paddle( self, "P2", "K_UP", "K_DOWN", "RIGHT" )
 		self.items = Items( self )
 		self.end = False
+		self.score = [0, 0]
 
 		self.balllist = [  ]
 
-		cs = [ 63, 127, 255 ]
-		for i in range( 40 ):
-			c = [ cs[ randint( 0, 2 ) ],
-				  cs[ randint( 0, 2 ) ],
-				  cs[ randint( 0, 2 ) ] ]
+		for i in range( 2 ):
 
-			self.balllist.append( self.Ball( self, 8, ( 3, 4 ), c, ( BallTypes.TROLL, ) ) )
+			self.makeball()
+
+	def makeball(self):
+		
+		cs = [ 63, 127, 255 ]
+		c = [ cs[ randint( 0, 2 ) ],
+			  cs[ randint( 0, 2 ) ],
+			  cs[ randint( 0, 2 ) ] ]
+
+		self.balllist.append( self.Ball( self, 8, ( 3, 4 ), c, ( BallTypes.SHADE, ) ) )
 
 	def update( self ):
 		
@@ -238,6 +271,10 @@ class Main:
 				except:
 					msg( self.s, n, ( n.x, n.y - 20 ), size=20 )
 
+
+		msg( self.s, self.score[0], [self.s.get_width() / 2. - 40,30], size=40, centered=True )
+		msg( self.s, self.score[1], [self.s.get_width() / 2. + 40,30], size=40, centered=True )
+
 	def loop( self ):
 
 		c = p.time.Clock(  )
@@ -256,6 +293,9 @@ class Main:
 				if e.type == p.KEYDOWN:
 					if e.key == p.K_d:
 						self.debug = self.debug * -1 + 1
+					if e.key == p.K_ESCAPE:
+						p.quit(  )
+						quit(  )
 
 			self.update(  )
 			self.draw(  )

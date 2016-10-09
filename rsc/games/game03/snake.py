@@ -3,7 +3,7 @@ from pg_enhancements import *
 from message import *
 from math import *
 from random import *
-
+import time
 
 
 
@@ -15,14 +15,15 @@ class Snake:
 
 		self.pos = [ self.main.scr.get_width(  ) // 2, self.main.scr.get_height(  ) // 2 ]
 		self.speed = [ 0, 0 ]
-		self.radius = 10
-		self.hitradius = 5
+		self.radius = 8
+		self.hitradius = 8
 		self.spd = 2
 		self.color = [ 0, 200, 100 ]
 		self.color2 = [ 200, 100, 200 ]
 		self.fade = 1
 		self.cooldown = 0
 		self.collide_with_snakes = 1
+		self.spd_increase = - .02
 
 		self.UP = p.K_w
 		self.DN = p.K_s
@@ -66,8 +67,8 @@ class Snake:
 
 
 
-		self.snakelist.append( list( self.pos ) )
-		if len( self.snakelist ) > self.lenght: del self.snakelist[ 0 ]
+		self.snakelist.append( [ self.pos[0], self.pos[1], self.grid_index ] )
+		while len( self.snakelist ) > self.lenght and len( self.snakelist ) > 5: del self.snakelist[ 0 ]
 
 
 		for part in self.snakelist[: - 2 * self.hitradius]:
@@ -87,25 +88,82 @@ class Snake:
 						a.dead = 1
 
 						self.lenght += a.radius
+						if self.spd < 0.4:
+							self.spd += self.spd_increase
 
-						for i in range( 2 ):
-							self.main.handler.items.generate( "Apple" )
+						for i in range( self.main.handler.items.applespeed ): self.main.handler.items.generate( "Apple" )
 
 
-		if self.collide_with_snakes:
+
+		for a in self.main.handler.items.speedcandylist:
+			if 	a.grid_index ==   self.grid_index 									   or \
+				a.grid_index == [ self.grid_index[ 0 ] - 1, self.grid_index[ 1 ] 	 ] or  \
+				a.grid_index == [ self.grid_index[ 0 ] + 1, self.grid_index[ 1 ] 	 ] or   \
+				a.grid_index == [ self.grid_index[ 0 ]	  , self.grid_index[ 1 ] - 1 ] or    \
+				a.grid_index == [ self.grid_index[ 0 ]	  , self.grid_index[ 1 ] + 1 ]:
+
+				if self.pos[ 0 ] - self.hitradius < a.pos[ 0 ] + a.radius and self.pos[ 0 ] + self.hitradius > a.pos[ 0 ] - a.radius:
+					if self.pos[ 1 ] - self.hitradius < a.pos[ 1 ] + a.radius and self.pos[ 1 ] + self.hitradius > a.pos[ 1 ] - a.radius:
+						a.dead = 1
+
+						self.spd += a.radius / 100.0
+						self.lenght -= a.radius
+
+						for i in range( self.main.handler.items.speedcandyspeed ): self.main.handler.items.generate( "Speedcandy" )
+
+		'''
+		if self.collide_with_snakes: 																			## OLD FANCY WAY
 			for s in self.main.handler.object_list:
 				if type( s ) == type( self ) and s != self:
 					delta = floor( len( s.snakelist ) / float( self.radius ) ) * s.spd
 					for i in range( int( delta ) ):
 						index = int( i * self.radius / float( s.spd ) )
-						if self.grid_index == self.main.get_gindex( s.snakelist[ index ] ):
+						
+						if self.grid_index == self.main.get_gindex( s.snakelist[ i ] ) or \
+						 	[ self.grid_index[ 0 ] - 1, self.grid_index[ 1 ] ] == self.main.get_gindex( s.snakelist[ i ] ) or \
+						 	[ self.grid_index[ 0 ] + 1, self.grid_index[ 1 ] ] == self.main.get_gindex( s.snakelist[ i ] ) or \
+						 	[ self.grid_index[ 0 ], self.grid_index[ 1 ] - 1 ] == self.main.get_gindex( s.snakelist[ i ] ) or \
+						 	[ self.grid_index[ 0 ], self.grid_index[ 1 ] + 1 ] == self.main.get_gindex( s.snakelist[ i ] ):
+
 							if self.pos[ 0 ] - self.hitradius < s.snakelist[ index ][ 0 ] + s.hitradius and \
 							self.pos[ 0 ] + self.hitradius > s.snakelist[ index ][ 0 ] - s.hitradius:
 								if self.pos[ 1 ] - self.hitradius < s.snakelist[ index ][ 1 ] + s.hitradius and \
 								self.pos[ 1 ] + self.hitradius > s.snakelist[ index ][ 1 ] - s.hitradius:
+
+									self.dead = 1
+									s.lenght += self.lenght // 2
+		
+
+
+		'''
+		if self.collide_with_snakes:																			## MORE ACCURATE BUT SLOWER WAY
+			for s in self.main.handler.object_list:
+				if type( s ) == type( self ) and s != self:
+					for i in range( len(s.snakelist) ):
+
+						if self.grid_index == self.main.get_gindex( s.snakelist[ i ] ) or \
+						 	[ self.grid_index[ 0 ] - 1, self.grid_index[ 1 ] ] == s.snakelist[ i ][ 2 ] or \
+						 	[ self.grid_index[ 0 ] + 1, self.grid_index[ 1 ] ] == s.snakelist[ i ][ 2 ] or \
+						 	[ self.grid_index[ 0 ], self.grid_index[ 1 ] - 1 ] == s.snakelist[ i ][ 2 ] or \
+						 	[ self.grid_index[ 0 ], self.grid_index[ 1 ] + 1 ] == s.snakelist[ i ][ 2 ]:
+
+							#print "NEAR"
+							if self.pos[ 0 ] - self.hitradius < s.snakelist[ i ][ 0 ] + s.hitradius and \
+							self.pos[ 0 ] + self.hitradius > s.snakelist[ i ][ 0 ] - s.hitradius:
+								if self.pos[ 1 ] - self.hitradius < s.snakelist[ i ][ 1 ] + s.hitradius and \
+								self.pos[ 1 ] + self.hitradius > s.snakelist[ i ][ 1 ] - s.hitradius:
+
 									self.dead = 1
 									s.lenght += self.lenght // 2
 
+									if self.pos[ 0 ] - self.hitradius < s.snakelist[ -1 ][ 0 ] + s.hitradius and \
+									self.pos[ 0 ] + self.hitradius > s.snakelist[ -1 ][ 0 ] - s.hitradius:
+										if self.pos[ 1 ] - self.hitradius < s.snakelist[ -1 ][ 1 ] + s.hitradius and \
+										self.pos[ 1 ] + self.hitradius > s.snakelist[ -1 ][ 1 ] - s.hitradius:
+											s.dead = 1
+
+									break
+		
 
 
 		if self.dead:
@@ -128,7 +186,7 @@ class Snake:
 					( float( n ) / len( self.snakelist ) ) * ( self.color[ 2 ] - self.color2[ 2 ] ) + self.color2[ 2 ],
 				 ]
 
-				p.draw.circle( self.main.scr, c, self.snakelist[n], self.radius )
+				p.draw.circle( self.main.scr, c, [int(self.snakelist[n][0]),int(self.snakelist[n][1])], self.radius )
 
 			elif not self.fade:
 				c = self.color

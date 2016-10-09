@@ -17,12 +17,12 @@ class Main:
 
 	def __init__( self ):
 
-		self.size = ( 600, 400 )
-		self.scr = p.display.set_mode( self.size )
+		self.size = ( 800, 600 )
+		self.scr = p.display.set_mode( self.size, p.FULLSCREEN )
 
 		self.active = 1
 		self.FPS = 60
-		self.gridsize = [ 8, 8 ]
+		self.gridsize = [ 20, 10 ]
 
 		
 
@@ -31,6 +31,7 @@ class Main:
 		self.cl = self.handler.cl
 		self.showfps = 2
 		self.debug = 0
+		self.drawgrid = 0
 		
 		self.reset(  )
 
@@ -50,6 +51,7 @@ class Main:
 		self.handler.reset(  )
 
 		self.handler.create( "Snake", { "speed" : [2,0] } )
+
 		self.handler.create( "Snake", { 
 			"speed" : [2,0],
 			"pos" : [ 100,100 ],
@@ -59,6 +61,18 @@ class Main:
 			"LT" : p.K_LEFT,
 			"color" : [ 200,200,50 ],
 		} )
+		
+
+		"""
+		self.handler.create( "Snake", { 
+			"speed" : [2,0],
+			"pos" : [ 100, self.scr.get_height(  ) - 100 ],
+			"DN" : p.K_j,
+			"UP" : p.K_u,
+			"RT" : p.K_k,
+			"LT" : p.K_h,
+			"color" : [ 100,50,200 ],
+		} )"""
 
 
 

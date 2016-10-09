@@ -48,8 +48,8 @@ class BallTypes:
 
 		def draw( self ):
 			p.draw.circle( self.par.par.s, self.par.color,
-				[ int( self.par.x + randint( -self.distortioin, self.distortioin ) ),
-				  int( self.par.y + randint( -self.distortioin, self.distortioin ) ) ], int( self.par.r ) )
+				[ int( self.par.x + randint( int( -self.distortioin ), int( self.distortioin ) ) ),
+				  int( self.par.y + randint( int( -self.distortioin ), int( self.distortioin ) ) ) ], int( self.par.r ) )
 
 	class TROLL:
 
@@ -61,7 +61,7 @@ class BallTypes:
 
 		def update( self ):
 
-			self.trollnes = randint( -self.trollindex, self.trollindex )
+			self.trollnes = randint( int( -self.trollindex ), int( self.trollindex ) )
 			self.par.angle += self.trollnes
 
 		def draw( self ):

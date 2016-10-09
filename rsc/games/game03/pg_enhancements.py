@@ -2,6 +2,131 @@ import pygame as p
 import math, random
 
 
+p.font.init(  )
+
+
+
+
+class Msg( object ):
+
+	@classmethod
+	def blit( self, window, text, pos, color = ( 255,255,255 ), size = 25, font = "Ubuntu", bold = 0, italic = 0 ):
+		font = p.font.SysFont( font, size, bold, italic )
+		label = font.render( str( text ), 1, color )
+		center = [ pos[ x ] - label.get_rect(  ).center[ x ] for x in range( 2 ) ]
+		window.blit( label, center )
+
+class ColorFuncts( object ):
+
+	@classmethod
+	def invert( self, color ):
+		rcolor = [  ]
+		for c in color:
+			rcolor.append( ( 255 - c ) )
+		return rcolor
+
+	@classmethod
+	def darken( self, color, index ):
+		rcolor = [  ]
+		for c in color:
+
+			if c - index < 0: rcolor.append( 0 )
+			elif c - index > 255: rcolor.append( 255 )
+
+			else: rcolor.append( ( c - index ) )
+
+		return rcolor
+
+
+
+
+
+
+
+
+class Button( object ):
+
+	def __init__( self, data ):
+
+		self.data = data
+
+		self.window = data[ "window" ]
+		self.pos = data[ "pos" ]
+		self.color = data[ "color" ]
+		self.clickcolor = data[ "clickcolor" ]
+		self.message = data[ "message" ]
+
+		try: self.fontsize = data[ "font" ][ "size" ]
+		except: self.fontsize = 25
+		try: self.font = data[ "font" ][ "type" ]
+		except: self.font = "Ubuntu Mono"
+
+		try: self.clickfontsize = data[ "font" ][ "clicksize" ]
+		except: self.clickfontsize = 20
+		try: self.clickfont = data[ "font" ][ "clicktype" ]
+		except: self.clickfont = "Ubuntu Mono"
+
+		try: self.type = data[ "type" ]( self )
+		except: self.type = None
+
+		try: self.action = data[ "action" ]; self.actionargs = data[ "args" ]; print self.action, self.actionargs
+		except: self.action = "NORMAL"
+
+		self.clicked = False
+		self.center = int(self.pos[ 0 ] + self.pos[ 2 ] / 2.), \
+			int(self.pos[ 1 ] + self.pos[ 3 ] / 2.)
+
+	def getClicked( self ):
+
+		self.update(  )
+
+		if self.action == "NORMAL":
+			return self.clicked
+
+		elif self.clicked:
+			return self.action( self.actionargs )
+
+		else:
+			return False
+
+	def update( self ):
+
+		self.center = int(self.pos[ 0 ] + self.pos[ 2 ] / 2.), \
+			int(self.pos[ 1 ] + self.pos[ 3 ] / 2.)
+
+		if self.type != None:
+			self.type.update(  )
+
+		else:
+			mpos = p.mouse.get_pos(  )
+
+			if p.mouse.get_pressed(  )[ 0 ] == 1 or p.mouse.get_pressed(  )[ 2 ] == 1:
+				if mpos[ 0 ] > self.pos[ 0 ] and mpos[ 0 ] < self.pos[ 0 ] + self.pos[ 2 ] and \
+					mpos[ 1 ] > self.pos[ 1 ] and mpos[ 1 ] < self.pos[ 1 ] + self.pos[ 3 ]:
+					self.clicked = True
+
+				else:
+					self.clicked = False
+			else:
+				self.clicked = False
+
+	def draw( self ):
+
+		if self.type != None:
+			self.type.draw(  )
+
+		else:
+			if self.clicked:
+				p.draw.ellipse( self.window, self.clickcolor, self.pos )
+				Msg.blit( self.window, self.message, self.center, ColorFuncts.invert( self.clickcolor ), self.clickfontsize , self.clickfont )
+
+			else:
+				p.draw.ellipse( self.window, self.color, self.pos )
+				Msg.blit( self.window, self.message, self.center, ColorFuncts.invert( self.color ), self.fontsize, self.font )
+
+
+
+
 
 
 
@@ -291,149 +416,3 @@ class Decorations( object ):
 						1,
 						self.pos[ 3 ] ] )
 					
-					
-
-class Bars( object ):
-	
-	class HealthBar( object ):
-
-		def __init__( self, scr, maxhealth, barlenght, bars=-1 ):
-
-			self.scr = scr
-			self.bars = bars
-			self.maxhealth = maxhealth
-			self.barlenght = barlenght
-			if barlenght > maxhealth:
-				self.barlenght = maxhealth
-
-			self.index = 255.0 / self.maxhealth
-
-			self.healthcolor = [ 0, 0, 0 ]
-
-			if self.bars <= 0:
-				self.bars = maxhealth / float( self.barlenght )
-
-		def draw( self, center, health ):
-
-			self.healthcolor = [ int( 255 - self.index * health ), 
-							     int( self.index * health ),
-							     0 ]
-
-			for b in range( int( math.floor( self.bars ) ) ):
-
-				p.draw.rect( self.scr, self.healthcolor,
-					[ center[ 0 ] - self.barlenght * health / 2 / self.bars,
-					  center[ 1 ] + 11 * ( b + 2 ),
-					  self.barlenght * health / self.bars,
-					  8 ]
-				)
-
-	class DynamicHealthBar( object ):
-
-		def __init__( self, scr, maxhealth, barlenght = 10, bars=-1 ):
-
-			self.scr = scr
-			self.size = scr.get_width(  ), scr.get_height(  )
-			self.bars = bars
-			self.maxhealth = maxhealth
-			self.barlenght = barlenght
-			if barlenght > maxhealth:
-				self.barlenght = maxhealth
-
-			if self.bars <= 0:
-				self.bars = maxhealth // self.barlenght
-
-			self.maxbarhealth = maxhealth / self.bars
-			self.index = 255.0 / self.maxhealth
-			self.barindex = 255.0 / self.maxbarhealth
-
-			healthcolor = [ 0, 0, 0 ]
-			self.barlist = [  ]
-
-			for i in range( int( math.floor( self.bars ) ) ):
-				self.barlist.append( [ self.maxbarhealth, healthcolor ] )
-
-		def draw( self, cent, health ):
-
-			self.bars = len( self.barlist )
-			center = [ cent[ 0 ], cent[ 1 ] ]
-
-			for b in self.barlist:
-				b[ 1 ] = [ 0, 255, 0 ]
-
-			self.barlist[ -1 ][ 0 ] = health - ( self.bars - 1 ) * self.maxbarhealth
-
-			try:
-				if self.barlist[ -1 ][ 0 ] <= 0:
-					del self.barlist[ -1 ]
-			except: pass
-
-			self.barlist[ -1 ][ 1 ] = [ abs( int( 255 - self.barindex * self.barlist[ -1 ][ 0 ] ) ), 
-								        abs( int( self.barindex * self.barlist[ -1 ][ 0 ] ) ),
-								        0 ]
-
-			if center[ 1 ] + 8 * ( len( self.barlist ) + 3 ) + 2 * 6 >= self.size[ 1 ]:
-				center[ 1 ] = self.size[ 1 ] - ( 8 * ( len( self.barlist ) + 3 ) + 2 * 6 )
-
-			elif center[ 1 ] <= 0:
-				center[ 1 ] = 0
-
-			try:
-				if center[ 0 ] + int( 7 * self.barlist[ 0 ][ 0 ] ) >= self.size[ 0 ]:
-					center[ 0 ] = self.size[ 0 ] - int( 7 * self.barlist[ 0 ][ 0 ] )
-
-				elif center[ 0 ] - int( 7 * self.barlist[ 0 ][ 0 ] ) <= 0:
-					center[ 0 ] = int( 7 * self.barlist[ 0 ][ 0 ] )
-			except: pass
-
-			d = 0
-			for b in self.barlist:
-				try:
-					p.draw.rect( self.scr, b[ 1 ], 
-						[ center[ 0 ] - self.barlenght / 2 * b[ 0 ],
-						  center[ 1 ] + 8 * ( d + 3 ), self.barlenght * b[ 0 ], 6] )
-				except:
-					pass
-				d += 1
-
-	class ProtBar( object ):
-
-		@classmethod
-		def draw( self, scr, cent, prot, depth=-1 ):
-
-			if depth < 0:
-				depth = prot / 10.0
-
-			if depth >= 25.5:
-				depth = 25.5
-			try:
-				prot /= depth
-			except: pass
-
-			size = scr.get_width(  ), scr.get_height(  )
-
-			center = [ cent[ 0 ], cent[ 1 ] ]
-
-			if center[ 1 ] + 8 * 5 + 2 * 6 >= size[ 1 ]:
-				center[ 1 ] = size[ 1 ] - 8 * 1 + 3 + 2 * 6
-
-			elif center[ 1 ] <= 0:
-				center[ 1 ] = 0
-
-			try:
-				if center[ 0 ] + int( 7 * prot ) >= size[ 0 ]:
-					center[ 0 ] = size[ 0 ] - int( 7 * prot )
-
-				elif center[ 0 ] - int( 7 * prot ) <= 0:
-					center[ 0 ] = int( 7 * prot )
-			except: pass
-
-			prot = int( math.floor( prot ) )
-
-			for i in range( int( prot // depth ) ):
-
-				p.draw.rect( scr, ( 255 - 10 * depth, 255 - 10 * depth, 255 - 10 * depth ), [ 
-					center[ 0 ] - 3,
-					center[ 1 ] + 10 * ( i + 3 ),
-					6,
-					6 ] )

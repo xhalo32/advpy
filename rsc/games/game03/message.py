@@ -4,7 +4,7 @@ p.font.init()
 
 
 def msg( window, text, pos, color=( 255,255,255 ), size=25, bold=0, italic=0, centered=False, align_to_screen=False, background=( ( 0,0,0 ), 0 ) ):
-	font = p.font.SysFont( 'Ubuntu Mono', size, bold, italic )
+	font = p.font.SysFont( 'Ubuntu Mono', int( size ), bold, italic )
 	label = font.render( str( text ), 1, color )
 
 	rect = label.get_rect(  )
