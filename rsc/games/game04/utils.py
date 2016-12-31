@@ -46,7 +46,7 @@ def triangle( pos, radius, rotation = 0, usecenter=True ):
 
 	return [ pos1, pos2, pos3 ]
 
-def arrow( pos, direction, unit=1, delta=40, order="ULDR" ):
+def arrow( pos, direction, unit=1, delta=40, order="LDUR" ):
 	u = unit
 	p0, p1 = pos
 	if direction == 0: # UP
@@ -232,6 +232,38 @@ class Effect:
 
 			for i in self.particles:
 				i.draw(  )
+	
+	class PressArrow:
+
+		def __init__( self, parent, color, pos, direction, unit, delta ):
+
+			self.parent = parent
+			self.color = color
+			self.pos = pos
+			self.direction = direction
+			self.unit = unit
+			self.delta = delta
+
+			self.scr = parent.scr
+			self.dead = False
+			self._timer = 12
+			self.timer = int( self._timer )
+
+			self.sizes = [ 0.5, 1.2 ] #minsize, maxsize
+			self.size = self.sizes[ 0 ]
+
+		def update( self ):
+
+			self.timer -= 1
+			if self.timer <= 0:
+				self.dead = True
+
+			if self.timer > (2.0/3)*self._timer: self.size += ( self.sizes[ 1 ] - self.sizes[ 0 ] )/( (1.0/3)*self._timer )
+			if self.timer < (1.0/3)*self._timer: self.size -= ( self.sizes[ 1 ] - self.sizes[ 0 ] )/( (1.0/3)*self._timer )
+
+		def draw( self ):
+
+			p.draw.polygon( self.scr, self.color, arrow( self.pos, self.direction, self.unit*self.size, self.delta ), 3 )
 
 	class Explode2:
 
@@ -293,12 +325,15 @@ class Effect:
 
 		## --- ##
 
+
+
 	def __init__( self, parent ):
 
 		self.parent = parent
 		self.scr = parent.scr
 		self.size = parent.size
 		self.effects = [  ]
+		self.lateeffects = [  ]
 
 	def mkExplosion( self, color, color2, size, speed, amount, lifetime, pos, opacity=255 ):
 
@@ -307,6 +342,10 @@ class Effect:
 	def mkExplosion2( self, color, colorindex, size, speed, amount, lifetime, pos, angle ):
 
 		self.effects.append( self.Explode2( self, color, colorindex, size, speed, amount, lifetime, pos, angle ) )
+
+	def mkPressArrow( self, color, pos, direction, unit=1, delta=40 ):
+
+		self.lateeffects.append( self.PressArrow( self, color, pos, direction, unit, delta ) )
 
 	def update( self ):
 
@@ -320,7 +359,17 @@ class Effect:
 		for e in tt:
 			self.effects.remove( e )
 
+
+		for e in self.lateeffects:
+			e.update(  )
+		self.lateeffects = [ e for e in self.lateeffects if not e.dead ]
+
 	def draw( self ):
 
 		for e in self.effects:
 			e.draw(  )
+
+	def drawlate( self ):
+
+		for e in self.lateeffects:
+			e.draw(  )		

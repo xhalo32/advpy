@@ -19,9 +19,10 @@ class Arrow:
 		self.dead = 0
 		self.hit = [ 0,0 ]
 		self.speed = 3
-		self.precision = 0.1
-		self.limits = [ -20,0 ]
+		self.precision = 0.2		# super easy precision: rate / 60
+		self.limits = [ -20,10 ] 	# 0: upper 1: lower
 		self.button_delta = 40
+		self.order = "LDUR"
 
 		for arg in kwargs:
 			setattr( self, arg, kwargs[ arg ] )
@@ -45,8 +46,13 @@ class Arrow:
 
 		# for multiple arrows
 
+		tl = abs(float(self.pos[ 1 ] + 30)) / 100.0 # translate effect
+		if tl > 1: tl = 1
+
 		for b in self.button:
-			p.draw.polygon( self.main.scr, self.color, utils.arrow( self.pos, "ULDR".index( b ), delta=self.button_delta ) )
+			p.draw.polygon( self.main.scr, self.color,
+
+				utils.arrow( self.pos, "ULDR".index( b ), unit=tl, delta=self.button_delta, order=self.order ) )
 
 
 	def update( self ):
@@ -58,7 +64,10 @@ class Arrow:
 
 			self.owner.miss(  )
 
-			self.main.handler.effect.mkExplosion( self._color, (0,0,0), 2, 3, 10, 120, self.pos )
+			for b in self.button:
+				self.main.handler.effect.mkExplosion( self._color, ( 0,0,0 ), 2, 2, 5, 60,
+					[ self.pos[ 0 ] + self.button_delta * ( -1.5 + self.order.index( b ) ), self.pos[ 1 ] ] )
+
 			self.dead = 1
 
 
@@ -81,10 +90,10 @@ class Arrow:
 			'''
 
 			if self.active:
-				if time.time(  ) - self.owner.press[ "up" ] < self.precision: self.hit[ 1 ] = -1
-				if time.time(  ) - self.owner.press[ "left" ] < self.precision: self.hit[ 0 ] = -1
-				if time.time(  ) - self.owner.press[ "down" ] < self.precision: self.hit[ 1 ] = 1
-				if time.time(  ) - self.owner.press[ "right" ] < self.precision: self.hit[ 0 ] = 1
+				if time.time(  ) - self.owner.press[ "up" ] < self.precision: self.hit[ 1 ] = -1; self.owner.press[ "up" ] = 0
+				if time.time(  ) - self.owner.press[ "left" ] < self.precision: self.hit[ 0 ] = -1; self.owner.press[ "left" ] = 0
+				if time.time(  ) - self.owner.press[ "down" ] < self.precision: self.hit[ 1 ] = 1; self.owner.press[ "down" ] = 0
+				if time.time(  ) - self.owner.press[ "right" ] < self.precision: self.hit[ 0 ] = 1; self.owner.press[ "right" ] = 0
 
 					# test for correct buttons
 
@@ -92,10 +101,8 @@ class Arrow:
 
 					self.owner.hit(  )
 					for b in self.button:
-						i = "ULDR".index( b )
-
 						self.main.handler.effect.mkExplosion( self._color, self._color2, 1, 2, 20, 60,
-							[ self.pos[ 0 ] + self.button_delta * ( -1.5 + i ), self.pos[ 1 ] ] )
+	[ self.pos[ 0 ] + self.button_delta * ( -1.5 + self.order.index( b ) ), self.pos[ 1 ] ] ) # explosions everywhere
 
 					self.dead = 1
 

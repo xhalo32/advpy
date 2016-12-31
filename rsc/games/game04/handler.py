@@ -2,7 +2,7 @@ import pygame as p
 from player import *
 from arrow import *
 
-from utils import *
+import utils
 
 
 
@@ -13,7 +13,7 @@ class Handler:
 		self.main = main
 		self.Player = Player
 		self.Arrow = Arrow
-		self.effect = Effect( self.main )
+		self.effect = utils.Effect( self.main )
 
 		self.playerlist = [  ]
 		self.arrowlist = [  ]
@@ -44,6 +44,8 @@ class Handler:
 
 		for player in self.playerlist: player.draw(  )
 		for arrow in self.arrowlist: arrow.draw(  )
+
+		self.effect.drawlate(  )
 
 	def update( self ):
 		self.handle_events(  )
