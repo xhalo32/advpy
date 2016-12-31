@@ -1,13 +1,16 @@
 from Tkinter import *
 from subprocess import *
+from time import sleep
 import os
 
 def se( e ):
 	global comm
 	hit = e.widget[ "text" ]
-	lbl[ "text" ] = hit
 	comm = "xrandr --output " + display + " --mode " + hit
-	os.system( comm )
+	print os.system( comm )
+
+	sleep( 1 )
+	lbl[ "text" ] = check_output( [ 'xvidtune', '-show' ] ).split( '"' )[ 1 ]
 
 def change_display( e ):
 	global display
@@ -19,6 +22,7 @@ def change_display( e ):
 
 
 text = check_output( [ 'xvidtune', '-show' ] ).split( '"' )[ 1 ]
+print "xvidtune", check_output( [ 'xvidtune', '-show' ] ).split( '"' )[ 1 ]
 
 dlist = [  ]
 xrand = check_output( [ 'xrandr' ] ).split( "\n" )
@@ -29,7 +33,10 @@ for line in xrand:
 		dlist.append( display )
 
 w = 10
-display = dlist[ -1 ]
+
+for d in dlist:
+	if "primary" in d:
+		display = d; break
 
 reslist = [  ]
 def update_reslist(  ):

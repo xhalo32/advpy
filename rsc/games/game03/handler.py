@@ -73,7 +73,7 @@ class Handler:
 		for obj in self.object_list:
 			obj.update(  )
 			if not obj.dead:aliveobjs.append(obj)
-		self.object_list=aliveobjs
+		self.object_list = aliveobjs
 
 
 	def draw( self ):

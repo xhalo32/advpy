@@ -205,7 +205,7 @@ class Main:
 	def __init__( self ):
 
 		self.size = ( 640, 480 )
-		self.s = p.display.set_mode( self.size ) #, p.FULLSCREEN
+		self.s = p.display.set_mode( self.size, p.FULLSCREEN )
 
 		self.reset(  )
 		self.debug = 0

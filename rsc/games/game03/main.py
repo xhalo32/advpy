@@ -4,8 +4,9 @@ from random import *
 from math import *
 
 from message import *
-from snake import *
 from handler import *
+
+from utils import *
 
 
 p.init(  )
@@ -42,9 +43,6 @@ class Main:
 
 	def reset( self ):
 		
-
-
-
 		self.command = ""
 		self.lt = self.nt = self.delta = 0
 
@@ -61,21 +59,6 @@ class Main:
 			"LT" : p.K_LEFT,
 			"color" : [ 200,200,50 ],
 		} )
-		
-
-		"""
-		self.handler.create( "Snake", { 
-			"speed" : [2,0],
-			"pos" : [ 100, self.scr.get_height(  ) - 100 ],
-			"DN" : p.K_j,
-			"UP" : p.K_u,
-			"RT" : p.K_k,
-			"LT" : p.K_h,
-			"color" : [ 100,50,200 ],
-		} )"""
-
-
-
 
 	def exec_command( self, com ):
 		#exec( com )
@@ -94,16 +77,6 @@ class Main:
 	#	except Exception as e:
 	#		cl.command = e
 	#	return cl.command
-
-	## ======COMMANDS======
-
-
-	def write( self, arg ):
-		return arg
-
-	def say( self, arg ):
-		print arg
-
 
 
 	## ========GAME========
@@ -129,7 +102,7 @@ class Main:
 	def fps( self ):
 
 		self.nt = time.time(  )
-		if self.lt != 0: self.delta = self.nt - self.lt; #print 1.0 / self.delta
+		if self.lt != 0: self.delta = self.nt - self.lt
 		self.lt = time.time(  )
 
 	def loop( self ):
