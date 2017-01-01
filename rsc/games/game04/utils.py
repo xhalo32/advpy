@@ -2,6 +2,8 @@ from math import *
 import random, math
 import pygame as p
 
+from message import msg
+
 
 def get_angle( dir ):
 	if dir[ 0 ] == 0 and dir [ 1 ] == -1: return 90
@@ -121,6 +123,13 @@ def arrow( pos, direction, unit=1, delta=40, order="LDUR" ):
 			l[ a ] = l[ a ][ 0 ] + dm*delta, l[ a ][ 1 ]
 		return l
 
+def wiggle( pos, r, exp=0 ):
+	r = int( r )
+	if isinstance(pos, list):
+		k = [ a + random.randint( -r,r ) * 10**exp for a in pos ]
+	else:
+		k = pos + random.randint( -r,r ) * 10**exp
+	return k
 
 
 class Effect:
@@ -232,7 +241,7 @@ class Effect:
 
 			for i in self.particles:
 				i.draw(  )
-	
+
 	class PressArrow:
 
 		def __init__( self, parent, color, pos, direction, unit, delta ):
@@ -265,65 +274,77 @@ class Effect:
 
 			p.draw.polygon( self.scr, self.color, arrow( self.pos, self.direction, self.unit*self.size, self.delta ), 3 )
 
-	class Explode2:
+	class BeatLine:
 
-		def __init__( self, parent, color, colorindex, size, speed, amount, lifetime, pos, angle ):
+		def __init__( self, parent, color, pos, wh, speed ):
 
 			self.parent = parent
-			self.size = size
-			self.speed = speed
 			self.color = color
-			self.colorindex = colorindex
 			self.pos = pos
-			self.scr = parent.scr
-			self.borders = parent.size
-			self.amount = amount
-			self.angle = angle
+			self.wh = wh
+			self.sizes = [ 0.5, 1.0 ] #minsize, maxsize
+			self.size = self.sizes[ 0 ]
+			self.speed = speed
 
-			self.particles = [  ]
+			self.scr = parent.scr
 			self.dead = False
+
+		def update( self ):
+
+			self.pos[ 1 ] += self.speed
+			if self.pos[ 1 ] > self.scr.get_height(  ): self.dead = 1
+			if 0 < self.pos[ 1 ] < 100: self.size += ( self.sizes[ 1 ] - self.sizes[ 0 ] )/( 100.0 )
+
+		def draw( self ):
+
+			p.draw.rect( self.scr, self.color,
+		[ self.pos[ 0 ] - ( self.wh[ 0 ] * self.size ) / 2, self.pos[ 1 ], self.wh[ 0 ] * self.size, self.wh[ 1 ] ] )
+
+	class PopUpMessage:
+
+		def __init__( self, parent, 	color, pos, message, size, lifetime, kwargs ):
+
+			self.parent = parent
+			self.color = color
+			self.pos = pos
+			self.message = message
+			self.fontsize = size
+			self.kwargs = kwargs
+
+			self.sizes = [ 0.1, 1.0 ] #minsize, maxsize
+			self.size = self.sizes[ 0 ]
+
+			self._lifetime = lifetime
 			self.timer = lifetime
 
-			for i in range( self.amount ):
+			self.scr = parent.scr
+			self.dead = False
+			self.perfect = 0
 
-				x = self.pos[ 0 ]
-				y = self.pos[ 1 ]
-
-				self.particles.append( 
-
-					self.parent.Particle( 
-						self.scr,
-						[ self.color[ 0 ] - random.randint( 0, self.colorindex[ 0 ] ),
-						  self.color[ 1 ] - random.randint( 0, self.colorindex[ 1 ] ),
-						  self.color[ 2 ] - random.randint( 0, self.colorindex[ 2 ] ), 
-						  self.color[ 3 ], ],
-						[ x, y ],
-						self.size * random.randint( 1, 4 ),
-						90 - self.angle + random.randint( -25, 25 ),
-						self.speed + random.randint( -20, 20 ) / 10.0,
-						1.01 + random.randint( 0, 10 ) / 100.0,
-						self.parent.parent	) )
+			try:
+				if kwargs[ "perfect" ]: self.perfect = 1
+				del kwargs[ "perfect" ]
+			except: self.perfect = 0
 
 		def update( self ):
 
 			self.timer -= 1
-			if self.timer <= 0:
-				self.dead = True
 
-			for i in self.particles:
-				i.update(  )
+			if self.timer > 4.0/5*self._lifetime: self.size += ( self.sizes[ 1 ] - self.sizes[ 0 ] )/( 1.0/5*self._lifetime )
+			if self.timer < 1.0/5*self._lifetime: self.size -= ( self.sizes[ 1 ] - self.sizes[ 0 ] )/( 1.0/5*self._lifetime )
 
-				if self.timer < 20 and i.radius > 0:
-					i.radius -= .3
+			if self.timer <= 0: self.dead = 1
 
 		def draw( self ):
 
-			size = self.scr.get_size(  )
-			
-			for i in self.particles:
-				i.draw(  )
+			if self.perfect:
+				msg( self.scr, self.message, wiggle( self.pos, 5 * self.size ), self.color, 
+					self.fontsize * wiggle( self.size, 1, -2 ) * 1.2, centered=True, **self.kwargs )
 
-		## --- ##
+				msg( self.scr, self.message, wiggle( self.pos, 5 * self.size ), self.color, 
+					self.fontsize * wiggle( self.size, 1, -2 ) * 1.2, centered=True, **self.kwargs )
+			else:
+				msg( self.scr, self.message, self.pos, self.color, self.fontsize * self.size, centered=True, **self.kwargs )
 
 
 
@@ -346,6 +367,14 @@ class Effect:
 	def mkPressArrow( self, color, pos, direction, unit=1, delta=40 ):
 
 		self.lateeffects.append( self.PressArrow( self, color, pos, direction, unit, delta ) )
+
+	def mkBeatLine( self, color, pos, wh, speed ):
+
+		self.effects.append( self.BeatLine( self, color, pos, wh, speed ) )
+
+	def mkPopUpMessage( self, color, pos, message, size, lifetime, kwargs={  } ):
+
+		self.effects.append( self.PopUpMessage( self, color, pos, message, size, lifetime, kwargs ) )
 
 	def update( self ):
 

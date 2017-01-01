@@ -13,7 +13,6 @@ class Player:
 
 		self.main = main
 
-		self.generator = Generator( self )
 		self.score = Score( self )
 
 		self.press = { "up" : 0, "left" : 0, "down" : 0, "right" : 0 }
@@ -23,6 +22,9 @@ class Player:
 		self.easymode = 0
 		self.arrowrate = 30
 		self.scoreboardside = -1
+		self.totalarrows = 0
+		
+		self.endtimer = 0
 
 		self.pressarrow_color = (150,0,255)
 
@@ -43,29 +45,38 @@ class Player:
 		self.combo += 1
 		self.hits += 1
 
+		if self.combo == 10: self.main.handler.effect.mkPopUpMessage(
+			(200,220,0), [i/2. for i in self.main.size], "10 STREAK!", 30, 80, { "italic" : 1 } )
+		if self.combo == 50: self.main.handler.effect.mkPopUpMessage(
+			(0,220,200), [i/2. for i in self.main.size], "50 STREAK!", 40, 80, { "italic" : 1 } )
+		if self.combo == 100: self.main.handler.effect.mkPopUpMessage(
+			(255,0,0), [i/2. for i in self.main.size], "100 STREAK!", 60, 80, { "italic" : 1 } )
+
 	def up( self ):
 		self.press[ "up" ] = time.time(  )
 		self.main.handler.effect.mkPressArrow( self.pressarrow_color, self.pos, 0 ) # 0 for UP
-		self.check_wrong(  )
+		if self.check_wrong(  ): self.press[ "up" ] = 0
 
 	def left( self ):
 		self.press[ "left" ] = time.time(  )
 		self.main.handler.effect.mkPressArrow( self.pressarrow_color, self.pos, 1 ) # 0 for UP
-		self.check_wrong(  )
+		if self.check_wrong(  ): self.press[ "left" ] = 0
 
 	def down( self ):
 		self.press[ "down" ] = time.time(  )
 		self.main.handler.effect.mkPressArrow( self.pressarrow_color, self.pos, 2 ) # 0 for UP
-		self.check_wrong(  )
+		if self.check_wrong(  ): self.press[ "down" ] = 0
 
 	def right( self ):
 		self.press[ "right" ] = time.time(  )
 		self.main.handler.effect.mkPressArrow( self.pressarrow_color, self.pos, 3 ) # 0 for UP
-		self.check_wrong(  )
+		if self.check_wrong(  ): self.press[ "right" ] = 0
 
 	def check_wrong( self ):
 		if not self.arrow_in_reach and not self.easymode: # arrow might still hit, even though you get a fault
 			self.wrong(  )
+			return 1
+		else: return 0
 
 	def draw( self ):
 		
@@ -87,27 +98,6 @@ class Player:
 				elif e.key == self.ULDR[ 2 ]: self.down(  )
 				elif e.key == self.ULDR[ 3 ]: self.right(  )
 
-		self.generator.update(  )
-
-
-
-class Generator:
-
-	def __init__( self, player ):
-
-		self.player = player
-		self.main = player.main
-
-		self.allowed_arrows = [ 0,2,4,6 ] #range( 0,8 ) [ 0,2,4,6 ]
-		self.timer = 0
-
-	def update( self ):
-
-		self.timer += 1
-
-		if self.timer % self.player.arrowrate == 0:
-			self.main.handler.create_arrow( pos=[ self.player.pos[ 0 ], -50 ], _color=( 20, 70, 255 ),
-					button=utils.mkbuttons( self.allowed_arrows[ randrange( len( self.allowed_arrows ) ) ] ), owner=self.player )
 
 
 class Score:
@@ -140,5 +130,5 @@ class Score:
 		message.msg( self.main.scr, p.misclicks, 	[ d, 160 ],			(200,0,0), weight=p.scoreboardside )
 		message.msg( self.main.scr, p.misses, 		[ d, 190 ],			(200,200,0), weight=p.scoreboardside )
 
-		message.msg( self.main.scr, p.main.handler.totalarrows,
+		message.msg( self.main.scr, p.totalarrows,
 													[ p.pos[ 0 ], 20 ],	(100,200,230), weight=p.scoreboardside )

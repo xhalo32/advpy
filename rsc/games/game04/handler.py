@@ -1,6 +1,7 @@
 import pygame as p
 from player import *
 from arrow import *
+from generator import *
 
 import utils
 
@@ -16,10 +17,13 @@ class Handler:
 		self.effect = utils.Effect( self.main )
 
 		self.playerlist = [  ]
+		self.generator = Generator( self.main )
+
 		self.arrowlist = [  ]
 
-		self.totalarrows = 0
 		self.events = [  ]
+
+		self.effect.mkPopUpMessage( (10,210,20), (400,300), "START", 100, 120, { "italic" : 1 } )
 
 
 	def handle_events( self ):
@@ -36,7 +40,6 @@ class Handler:
 
 	def create_arrow( self, **kwargs ):
 		self.arrowlist.append( self.Arrow( self.main, **kwargs ) )
-		self.totalarrows += 1
 
 	def draw( self ):
 
@@ -58,5 +61,7 @@ class Handler:
 
 		for player in self.playerlist: player.update(  )
 		for arrow in self.arrowlist: arrow.update(  )
+
+		self.generator.update(  )
 
 		self.effect.update(  )

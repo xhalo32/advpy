@@ -19,7 +19,7 @@ class Arrow:
 		self.dead = 0
 		self.hit = [ 0,0 ]
 		self.speed = 3
-		self.precision = 0.2		# super easy precision: rate / 60
+		self.precision = 0.2		# must be greater than time spent in limits
 		self.limits = [ -20,10 ] 	# 0: upper 1: lower
 		self.button_delta = 40
 		self.order = "LDUR"

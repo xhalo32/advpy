@@ -1,7 +1,7 @@
 import pygame as p
 import main
-try: Main = main.Main(  )
-except Exception as e: print e
+Main = main.Main(  )
+
 
 p.quit(  )
 quit(  )
