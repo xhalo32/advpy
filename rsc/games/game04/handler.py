@@ -2,6 +2,7 @@ import pygame as p
 from player import *
 from arrow import *
 from generator import *
+from mixer import *
 
 import utils
 
@@ -18,6 +19,8 @@ class Handler:
 
 		self.playerlist = [  ]
 		self.generator = Generator( self.main )
+
+		self.mixer = Mixer( self.main )
 
 		self.arrowlist = [  ]
 

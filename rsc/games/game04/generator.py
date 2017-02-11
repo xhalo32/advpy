@@ -13,19 +13,20 @@ class Generator:
 
 		self.main = main
 
-		self.allowed_arrows = [ 0,2,4,6 ] #range( 0,8 ) [ 0,2,4,6 ]
+		self.allowed_arrows = [ 0,2,4,6 ] #range( 0,8 ) #[ 0,2,4,6 ]
+		self.allowed = [ "/2" ] + self.allowed_arrows
 		self.timer = 0
 
 		self.generator_list = [] #[ 0, -30, 0, -30 ] # negative numbers for wait, positive for arrows
 		self.wait = 0
 		self.end = 0
 
-		self.generator_list = self.generate_arrow_list( [ -30, -60, -15 ] + [ 0, 2, 4, 6 ], 10 )
+		self.generator_list = self.generate_arrow_list( self.allowed, 100 )
 
 	def generate_arrow_list( self, allowed, amount ):
 		l = [  ]
-		allowed_arrows = [ a for a in allowed if a >= 0 ]
-		allowed_timings = [ a for a in allowed if a < 0 ]
+		allowed_arrows = [ a for a in allowed if a >= 0 and not isinstance( a, str ) ]
+		allowed_timings = [ a for a in allowed if a < 0 or isinstance( a, str ) ]
 
 		for i in range( amount ):
 			l.append( allowed_arrows[ randrange( len( allowed_arrows ) ) ] )
@@ -44,7 +45,7 @@ class Generator:
 
 				for player in self.main.handler.playerlist: 				# generate arrow for each player
 					player.totalarrows += 1
-					self.main.handler.create_arrow( pos=[ player.pos[ 0 ], -50 ], _color=( 20, 70, 255 ),
+					self.main.handler.create_arrow( pos=[ player.pos[ 0 ], -50 ], _color=player.color,
 								button=utils.mkbuttons( l[ 0 ] ), owner=player )
 
 			elif l[ 0 ] < 0:
@@ -52,16 +53,16 @@ class Generator:
 
 		elif isinstance( l[ 0 ], str ):
 			if "/" in l[ 0 ]:
-				t = 60.0 / int( l[ 0 ].split( "/" )[ 1 ] )
+				t = 64.0 / int( l[ 0 ].split( "/" )[ 1 ] )
 				self.queue_wait( t )
 
 		del l[ 0 ]
 
 	def queue_wait( self, wait ):
-		if self.wait != 0: print "wait time interrupted"
+		#if self.wait != 0: print "wait time interrupted"
 		self.wait = wait - 2
 
-	def generate_beatlines( self, width=220, color=(200,200,255), delta=60, offset=0 ):
+	def generate_beatlines( self, width=220, color=(200,200,255), delta=64, offset=0 ):
 
 		if self.generator_list:
 			for player in self.main.handler.playerlist:
@@ -86,7 +87,7 @@ class Generator:
 
 		self.timer += 1
 
-		if self.wait == 0: self.read( self.generator_list )
+		if self.wait <= 0: self.read( self.generator_list )
 		elif self.wait > 0: self.wait -= 1
 
 		if not self.generator_list and not self.wait and not self.end:								# end of the game

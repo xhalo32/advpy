@@ -46,11 +46,11 @@ class Player:
 		self.hits += 1
 
 		if self.combo == 10: self.main.handler.effect.mkPopUpMessage(
-			(200,220,0), [i/2. for i in self.main.size], "10 STREAK!", 30, 80, { "italic" : 1 } )
+			(200,220,0), [self.pos[0], self.main.size[1] / 2], "10 STREAK!", 30, 80, { "italic" : 1 } )
 		if self.combo == 50: self.main.handler.effect.mkPopUpMessage(
-			(0,220,200), [i/2. for i in self.main.size], "50 STREAK!", 40, 80, { "italic" : 1 } )
+			(0,220,200), [self.pos[0], self.main.size[1] / 2], "50 STREAK!", 40, 120, { "italic" : 1 } )
 		if self.combo == 100: self.main.handler.effect.mkPopUpMessage(
-			(255,0,0), [i/2. for i in self.main.size], "100 STREAK!", 60, 80, { "italic" : 1 } )
+			(255,0,0), [self.pos[0], self.main.size[1] / 2], "100 STREAK!", 60, 200, { "italic" : 1, "bold" : 1 } )
 
 	def up( self ):
 		self.press[ "up" ] = time.time(  )

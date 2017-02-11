@@ -31,13 +31,13 @@ def sub( e ):
 
 def se( e ):
 	global g
-	os.system( "redshift -O 6200 -g " + str(g) )
+	os.system( "xrandr --output eDP-1-1 --gamma "+str(g)+":"+str(g)+":"+str(g) )
 
 def res( e ):
 	global g
 	g = 1.0
 	lbl[ "text" ] = g
-	os.system( "redshift -O 6200 -g 1" )
+	os.system( "xrandr --output eDP-1-1 --gamma 1:1:1" )
 
 btn1 = Button( f, text="+", width=w )
 btn2 = Button( f, text="-", width=w )
