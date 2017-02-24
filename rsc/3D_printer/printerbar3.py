@@ -25,11 +25,14 @@ class PrinterBar3:
 		self.octoclient = OctoClient(url=self.url, apikey=self.api)
 
 		self.current_frame = 'main'
+		self.graph_temperature_multtime = 3
+		self.graph_temperature_lastpos = (None, None)
 
 		self.root.wm_title( "PB3" )
 		self.root.call('wm', 'attributes', '.', '-topmost', '1')	# make the window stay on top
 
-		self.update_interval = 1000	# ms
+		self._update_interval = 500	# ms
+		self.update_interval = self._update_interval
 
 		for frame_name, frame_data in self._frames.frames.items():
 
@@ -37,9 +40,15 @@ class PrinterBar3:
 			self._frames.frames[frame_name]['frame'] = \
 				Frame( self.root, **self._frames.frames[frame_name]['frameargs'] )		
 			
-			# pack the frame
-			self._frames.frames[frame_name]['frame'].grid\
-				(**self._frames.frames[frame_name]['packargs'])							
+			# grid the frame
+			if 'gridargs' in self._frames.frames[frame_name].keys():
+				self._frames.frames[frame_name]['frame'].grid\
+					(**self._frames.frames[frame_name]['gridargs'])	
+
+			else:
+				self._frames.frames[frame_name]['frame'].pack\
+					(**self._frames.frames[frame_name]['packargs'])	
+
 
 			# create all elements/widgets inside that frame
 			for element_type, elementlist in frame_data.items():		
@@ -68,7 +77,11 @@ class PrinterBar3:
 
 						b = Button( self._frames.frames[frame_name]['frame'], **element['button'] )
 
-						b.grid( **element['grid'] )
+						if 'pack' in element.keys():
+							b.pack( **element['pack'] )
+						else:
+							b.grid( **element['grid'] )
+
 						self._frames.frames[frame_name]['element_list'][element['id']] = b
 
 						if 'tooltip' in element.keys():
@@ -86,18 +99,27 @@ class PrinterBar3:
 						if 'tooltip' in element.keys():
 							ToolTip(c, **element['tooltip'])
 
+				if isinstance(elementlist, list):
+					for elem in elementlist:
+						if isinstance(elem, dict):
+							if 'bind' in elem.keys():
+								self._frames.frames[frame_name]['element_list'][elem['id']].bind( 
+									elem['bind']['event'], elem['bind']['action'] )
+
 
 		self.root.update()
 
 		# set canvas width
 		self._frames.frames['main']['element_list']['bar_progress'].width = \
-			self._frames.frames['main']['frame'].winfo_width()
+			self._frames.frames['main']['frame'].winfo_width()-2
 
 		self._frames.frames['main']['element_list']['bar_progress_time'].width = \
-			self._frames.frames['main']['frame'].winfo_width()
+			self._frames.frames['main']['frame'].winfo_width()-2
 
-		#print(self._frames.frames['main']['element_list']['bar_progress'].width) # 32 : 264
+		self._frames.frames['graph']['element_list']['graph_temperature']['width'] = \
+				self._frames.frames['main']['frame'].winfo_width()-2
 
+		##
 
 		self.raise_frame(self.current_frame)
 
@@ -105,13 +127,58 @@ class PrinterBar3:
 		self.root.mainloop()
 
 	def update(self):
-		job = self.octoclient.job_info()
 
-		self._frames.frames['status']['element_list']['print_name']['text'] = job['job']['file']['path'].split(".gcode")[0]
+		_job = self.octoclient.job_info()
+		if _job: job=_job
+		else: job=None
+		_tool = self.octoclient.tool()
+		if _tool: tool=_tool
+		else: tool=None
+		_bed = self.octoclient.bed()
+		if _bed: bed=_bed
+		else: bed=None
+
+		_tool_history=self.octoclient.tool(history=True, limit=800)
+		if _tool_history: tool_history=_tool_history
+		else: tool_history = None
+
+		_bed_history=self.octoclient.bed(history=True, limit=800)
+		if _bed_history: bed_history=_bed_history
+		else: bed_history = None
+
+		if self.current_frame == 'graph_temperature': self.update_interval=10
+		else: self.update_interval=self._update_interval
+
+
+		if job:
+			self._frames.frames['status']['element_list']['print_name']['text'] = job['job']['file']['path'].split(".gcode")[0]
+		else:
+			self._frames.frames['status']['element_list']['print_name']['text'] = "-"
 
 		if self.current_frame == 'main':
 
-			if job['progress']['printTime']:
+			# update tools
+
+			if tool:
+				self._frames.frames['main']['element_list']['temp_tool']['fg']=get_col(tool['tool0']['actual'], [100, 210])
+				self._frames.frames['main']['element_list']['temp_tool']['text'] = "%sC / %sC" %\
+					( tool['tool0']['actual'], tool['tool0']['target'] )
+			else:
+				self._frames.frames['main']['element_list']['temp_tool']['text'] = "-"
+
+
+			if bed:
+				self._frames.frames['main']['element_list']['temp_bed']['fg']=get_col(bed['bed']['actual'], [20, 60])
+				self._frames.frames['main']['element_list']['temp_bed']['text'] = "%sC / %sC" %\
+					( bed['bed']['actual'], bed['bed']['target'] )
+
+			else:
+				self._frames.frames['main']['element_list']['temp_bed']['text'] = "-"
+
+			
+			# update text
+
+			if job:
 				self._frames.frames['main']['element_list']['print_time_done']['text'] = \
 					time.strftime("%Hh %Mm %Ss", time.gmtime(job['progress']['printTime']))
 
@@ -121,14 +188,34 @@ class PrinterBar3:
 				progress = job['progress']['completion']
 
 				# draw the bar with colors
-				draw_progress_bar( self._frames.frames['main']['element_list']['bar_progress'], progress/100.0 )
-				draw_progress_bar( self._frames.frames['main']['element_list']['bar_progress_time'],
-					float( job['progress']['printTime'] ) / 
-					( float( job['progress']['printTime'] )+float( job['progress']['printTimeLeft'] ) ) )
+
+				if progress:
+					draw_progress_bar( self._frames.frames['main']['element_list']['bar_progress'], progress/100.0 )
+				else:
+					draw_progress_bar( self._frames.frames['main']['element_list']['bar_progress'], 10**-10 )
+
+				if job['progress']['printTimeLeft'] and job['progress']['printTime']:
+					draw_progress_bar( self._frames.frames['main']['element_list']['bar_progress_time'],
+						float( job['progress']['printTime'] ) / 
+						( float( job['progress']['printTime'] )+float( job['progress']['printTimeLeft'] ) ), value=64 )
+				else:
+					draw_progress_bar( self._frames.frames['main']['element_list']['bar_progress_time'], 10**-10, value=64 )
+
+			else:
+				self._frames.frames['main']['element_list']['print_time_done']['text'] = "-"
+				self._frames.frames['main']['element_list']['print_time_left']['text'] = "-"
+
+		elif self.current_frame == 'graph':
+			if tool_history and bed_history:
+
+				draw_graph( self._frames.frames['graph']['element_list']['graph_temperature'],
+					tool_history, bed_history, multtime=self.graph_temperature_multtime, lastpos=self.graph_temperature_lastpos )
+
 
 		self.root.after(self.update_interval, self.update)
 
 	def raise_frame(self, name):
+		self.current_frame=name
 		self._frames.frames[name]['frame'].tkraise()
 		for f in self._frames.frames.keys():
 
@@ -144,9 +231,20 @@ class PrinterBar3:
 				self._frames.frames['status']['element_list']\
 					[self._frames.frames['status']['buttons'][b]['id']]['relief'] = FLAT
 
+	def zoom_graph_temperature(self, event):
+		if event.num == 5:
+			self.graph_temperature_multtime += 0.2
+		elif event.num == 4:
+			self.graph_temperature_multtime -= 0.2
 
-def main():
-	pb3 = PrinterBar3()
+		if self.graph_temperature_multtime < 0.6: self.graph_temperature_multtime = 0.6
+		if self.graph_temperature_multtime > 8: self.graph_temperature_multtime = 8
+
+		if event.num == 1:
+			self.graph_temperature_lastpos=(event.x, event.y)
+
+		if event.num == 3:
+			self.graph_temperature_lastpos=(None, None)
 
 if __name__ == '__main__':
-	main()
+	pb3 = PrinterBar3()

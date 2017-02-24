@@ -9,16 +9,15 @@ class Frames:
 	"status" :
 	{
 		'frame' : None,
-		'packargs' :
+		'gridargs' :
 		{
 			'row' : 0,
-			'ipady' : 5,
+			'sticky' : 'ns',
 		},
 		'frameargs' :
 		{
-			#'bg' : 'blue',
 			'bg' : '#d8d8d8',
-			'width' : 32,
+			'bg' : 'blue',
 		},
 
 		'element_list' : {},		# empty dict for all the elements
@@ -31,13 +30,13 @@ class Frames:
 				{
 					'text' : '',
 					'bg' : '#e8e8e8',
-					'width' : 32,
+					'width' : 40,
 					'relief' : FLAT,
 				},
 				'grid' :			# grid and arguments
 				{
 					'row' : 0,
-					'columnspan' : 2,
+					'columnspan' : 3,
 					'sticky' : 'nesw',
 				},
 				'tooltip' :
@@ -64,10 +63,9 @@ class Frames:
 				},
 				'grid' :
 				{
-					'row' : 1,
 					'column' : 0,
-					'columnspan' : 1,
-					'sticky' : 'we',
+					'row' : 1,
+					'stick' : 'nesw',
 				},
 				'tooltip' :
 				{
@@ -89,14 +87,37 @@ class Frames:
 				},
 				'grid' :
 				{
-					'row' : 1,
 					'column' : 1,
-					'columnspan' : 1,
-					'sticky' : 'we',
+					'row' : 1,
+					'stick' : 'nesw',
 				},
 				'tooltip' :
 				{
 					'text' : 'Detail Tab',
+					'follow_mouse' : 1,
+					'delay' : 500,
+					'bg' : '#b3b3b3',
+					'relief' : FLAT,
+				},
+			},
+			{
+				'id' : 'btn_goto_graph',
+				'button' :
+				{
+					'text' : 'Graph',
+					'bg' : '#d8d8d8',
+					'relief' : FLAT,
+					'command' : lambda: self.master.raise_frame('graph'),
+				},
+				'grid' :
+				{
+					'column' : 2,
+					'row' : 1,
+					'stick' : 'nesw',
+				},
+				'tooltip' :
+				{
+					'text' : 'Graph Tab',
 					'follow_mouse' : 1,
 					'delay' : 500,
 					'bg' : '#b3b3b3',
@@ -109,7 +130,7 @@ class Frames:
 	"main" : 
 	{
 		'frame' : None,
-		'packargs' :
+		'gridargs' :
 		{
 			'row' : 1,
 			'sticky' : 'nesw',
@@ -131,7 +152,7 @@ class Frames:
 				{
 					'text' : '',
 					'bg' : '#d8d8d8',
-					'width' : 16,
+					'width' : 20,
 					'relief' : FLAT,
 				},
 				'grid' :
@@ -157,7 +178,7 @@ class Frames:
 				{
 					'text' : '',
 					'bg' : '#d8d8d8',
-					'width' : 16,
+					'width' : 20,
 					'relief' : FLAT,
 				},
 				'grid' :
@@ -170,6 +191,58 @@ class Frames:
 				'tooltip' :
 				{
 					'text' : 'Time left',
+					'follow_mouse' : 1,
+					'delay' : 500,
+					'bg' : '#b3b3b3',
+					'relief' : FLAT,
+				},
+			},
+
+			{
+				'id' : 'temp_tool',
+				'label' :
+				{
+					'text' : '',
+					'bg' : '#d8d8d8',
+					'width' : 20,
+					'relief' : FLAT,
+				},
+				'grid' :
+				{
+					'row' : 2,
+					'column' : 0,
+					'columnspan' : 1,
+					'sticky' : 'nesw',
+				},
+				'tooltip' :
+				{
+					'text' : 'Printhead temperature',
+					'follow_mouse' : 1,
+					'delay' : 500,
+					'bg' : '#b3b3b3',
+					'relief' : FLAT,
+				},
+			},
+
+			{
+				'id' : 'temp_bed',
+				'label' :
+				{
+					'text' : '',
+					'bg' : '#d8d8d8',
+					'width' : 20,
+					'relief' : FLAT,
+				},
+				'grid' :
+				{
+					'row' : 2,
+					'column' : 1,
+					'columnspan' : 1,
+					'sticky' : 'nesw',
+				},
+				'tooltip' :
+				{
+					'text' : 'Bed temperature',
 					'follow_mouse' : 1,
 					'delay' : 500,
 					'bg' : '#b3b3b3',
@@ -195,7 +268,7 @@ class Frames:
 				},
 				'grid' :
 				{
-					'row' : 2,
+					'row' : 3,
 					'columnspan' : 2,
 					'sticky' : 'nesw',
 				},
@@ -219,7 +292,7 @@ class Frames:
 				},
 				'grid' :
 				{
-					'row' : 3,
+					'row' : 4,
 					'columnspan' : 2,
 					'sticky' : 'nesw',
 				},
@@ -239,7 +312,7 @@ class Frames:
 	"detail" :
 	{
 		'frame' : None,
-		'packargs' :
+		'gridargs' :
 		{
 			'row' : 1,
 			'sticky' : 'nesw',
@@ -278,5 +351,44 @@ class Frames:
 				},
 			},
 		],
+	},
+
+	"graph" :
+	{
+		'frame' : None,
+		'gridargs' :
+		{
+			'row' : 1,
+			'sticky' : 'nesw',
+		},
+		'frameargs' :
+		{
+			'bg' : 'yellow',
+		},
+
+
+		'element_list' : {},
+		'canvases':
+		[
+			{
+				
+				'id' : 'graph_temperature',
+				'canvas' :
+				{
+					'bg' : '#d8d8d8',
+					'width' : 0,
+					'height' : 128,
+				},
+				'grid' :
+				{
+					'sticky' : 'ne',
+				},
+				'bind' :
+				{
+					'event' : '<Button>',
+					'action' : self.master.zoom_graph_temperature	
+				},
+			}
+		]
 	},
 }
