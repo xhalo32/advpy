@@ -98,7 +98,8 @@ class Arrow:
 					# test for correct buttons
 
 				if self.hit == self.dir:
-
+                                        
+                                        '''
 					if "U" in self.button:
 						self.main.handler.mixer.play( "note1" )
 					if "R" in self.button:
@@ -106,7 +107,7 @@ class Arrow:
 					if "D" in self.button:
 						self.main.handler.mixer.play( "note3" )
 					if "L" in self.button:
-						self.main.handler.mixer.play( "note4" )
+						self.main.handler.mixer.play( "note4" )'''
 
 					self.owner.hit(  )
 					for b in self.button:

@@ -11,7 +11,7 @@ from message import *
 import utils
 
 
-p.init(  )
+p.init()
 p.font.init(  )
 
 

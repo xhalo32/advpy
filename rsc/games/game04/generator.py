@@ -13,8 +13,8 @@ class Generator:
 
 		self.main = main
 
-		self.allowed_arrows = [ 0,2,4,6 ] #range( 0,8 ) #[ 0,2,4,6 ]
-		self.allowed = [ "/2" ] + self.allowed_arrows
+		self.allowed_arrows = range( 0,8 ) #[ 0,2,4,6 ]
+		self.allowed = [ "/2", "/4" ] + self.allowed_arrows
 		self.timer = 0
 
 		self.generator_list = [] #[ 0, -30, 0, -30 ] # negative numbers for wait, positive for arrows
